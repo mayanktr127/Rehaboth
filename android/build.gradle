@@ -1,0 +1,60 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+
+try {
+    Class<?> pe = Class.forName("java.lang.ProcessEnvironment")
+    def theEnvField = pe.getDeclaredField("theEnvironment")
+    theEnvField.setAccessible(true)
+    Map<String, String> env = (Map<String, String>) theEnvField.get(null)
+    
+    def theCiEnvField = pe.getDeclaredField("theCaseInsensitiveEnvironment")
+    theCiEnvField.setAccessible(true)
+    Map<String, String> cienv = (Map<String, String>) theCiEnvField.get(null)
+    
+    String adoptiumBin = "C:\\Users\\Mayank\\AppData\\Local\\Programs\\Eclipse Adoptium\\jdk-17.0.6.10-hotspot\\bin"
+    String curPath = env.get("Path") ?: env.get("PATH") ?: ""
+    if (!curPath.startsWith(adoptiumBin)) {
+        String newPath = adoptiumBin + ";" + curPath
+        env.put("PATH", newPath)
+        env.put("Path", newPath)
+        cienv.put("PATH", newPath)
+        cienv.put("Path", newPath)
+    }
+} catch (Throwable t) {
+    // ignore
+}
+
+buildscript {
+
+  repositories {
+    google()
+    mavenCentral()
+  }
+  dependencies {
+    classpath('com.android.tools.build:gradle')
+    classpath('com.facebook.react:react-native-gradle-plugin')
+    classpath('org.jetbrains.kotlin:kotlin-gradle-plugin')
+  }
+}
+
+allprojects {
+  repositories {
+    google()
+    mavenCentral()
+    maven { url 'https://www.jitpack.io' }
+  }
+  tasks.withType(JavaCompile).configureEach {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+  }
+  plugins.withId('org.jetbrains.kotlin.android') {
+    kotlin {
+      jvmToolchain(17)
+    }
+  }
+}
+
+
+
+
+apply plugin: "expo-root-project"
+apply plugin: "com.facebook.react.rootproject"
