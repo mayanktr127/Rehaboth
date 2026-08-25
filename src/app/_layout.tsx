@@ -1,18 +1,50 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { useColorScheme } from 'react-native';
+import { Stack } from "expo-router";
+import { ThemeProvider } from "../components/ThemeContext";
+import { ResponsiveContainer } from "../components/ResponsiveContainer";
+import { View, StyleSheet, Platform, StatusBar as RNStatusBar } from "react-native";
+import { StatusBar } from "expo-status-bar";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 
-import { AnimatedSplashOverlay } from '@/components/animated-icon';
-import AppTabs from '@/components/app-tabs';
-
-SplashScreen.preventAutoHideAsync();
-
-export default function TabLayout() {
-  const colorScheme = useColorScheme();
+export default function RootLayout() {
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <AnimatedSplashOverlay />
-      <AppTabs />
-    </ThemeProvider>
+    <SafeAreaProvider>
+      <ThemeProvider>
+        <View style={styles.container}>
+          <StatusBar style="dark" />
+          <ResponsiveContainer>
+            <Stack
+              screenOptions={{
+                headerShown: false,
+                animation: 'slide_from_bottom',
+                animationDuration: 420,
+              }}
+            >
+              <Stack.Screen name="index" />
+              <Stack.Screen name="register" />
+              <Stack.Screen name="dashboard" />
+              <Stack.Screen name="schedule-pickup" />
+              <Stack.Screen name="smart-bag-details" />
+              <Stack.Screen name="order-status" />
+              <Stack.Screen name="profile" />
+              <Stack.Screen name="secure-handover" />
+              <Stack.Screen name="select-location" />
+              <Stack.Screen name="concierge-bot" />
+              <Stack.Screen name="help-center" />
+            </Stack>
+
+
+
+          </ResponsiveContainer>
+
+        </View>
+      </ThemeProvider>
+    </SafeAreaProvider>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#f8f3ea',
+  },
+});
