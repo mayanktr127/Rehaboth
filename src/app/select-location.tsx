@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -7,20 +7,75 @@ import {
   Pressable,
   SafeAreaView,
   ScrollView,
+  ActivityIndicator,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTheme } from '../components/ThemeContext';
 import { GoldButton } from '../components/GoldButton';
-import { DemoData } from '../constants/theme';
 import { TopHeaderNav } from '../components/TopHeaderNav';
 import { FluidPage } from '../components/FluidMotion';
+import { Fonts } from '../constants/theme';
+import {
+  geocodingService,
+  GeocodedLocation,
+  DEFAULT_COVERAGE_LOCATIONS,
+} from '../services/geo';
+import { useTranslation } from '../i18n';
 
 export default function SelectLocationScreen() {
   const router = useRouter();
   const { colors } = useTheme();
+  const { t } = useTranslation();
 
   const [searchQuery, setSearchQuery] = useState('Indiranagar, Bengaluru');
+  const [searchResults, setSearchResults] = useState<GeocodedLocation[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [selectedLocation, setSelectedLocation] = useState<GeocodedLocation>(
+    DEFAULT_COVERAGE_LOCATIONS[0]
+  );
   const [selectedAddressId, setSelectedAddressId] = useState('home');
+
+  // Debounced address search
+  useEffect(() => {
+    let isCurrent = true;
+    const timer = setTimeout(async () => {
+      if (searchQuery.trim().length > 1) {
+        setIsSearching(true);
+        try {
+          const results = await geocodingService.searchAddresses(searchQuery);
+          if (isCurrent) setSearchResults(results);
+        } catch {
+          // Fallback to static coverage
+          if (isCurrent) setSearchResults(DEFAULT_COVERAGE_LOCATIONS.slice(0, 3));
+        } finally {
+          if (isCurrent) setIsSearching(false);
+        }
+      } else {
+        setSearchResults([]);
+      }
+    }, 280);
+
+    return () => {
+      isCurrent = false;
+      clearTimeout(timer);
+    };
+  }, [searchQuery]);
+
+  const handleSelectSearchResult = (loc: GeocodedLocation) => {
+    setSelectedLocation(loc);
+    setSearchQuery(loc.title);
+    setSearchResults([]);
+  };
+
+  const handleSelectSavedAddress = (id: string, loc: GeocodedLocation) => {
+    setSelectedAddressId(id);
+    setSelectedLocation(loc);
+    setSearchQuery(loc.title);
+  };
+
+  const handleConfirmLocation = () => {
+    router.back();
+  };
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
@@ -36,115 +91,195 @@ export default function SelectLocationScreen() {
           {/* Top Header */}
           <TopHeaderNav showBack={true} />
 
-
-        {/* Search Bar Input Card */}
-        <View style={styles.searchSection}>
-          <View style={[styles.searchBox, { backgroundColor: colors.cardBg, borderColor: colors.border }]}>
-            <Text style={{ fontSize: 16, color: colors.mutedForeground }}>⌕</Text>
-            <TextInput
-              style={[styles.searchInput, { color: colors.foreground }]}
-              value={searchQuery}
-              onChangeText={setSearchQuery}
-              placeholder="Search area, apartment, street..."
-              placeholderTextColor={colors.mutedForeground}
-            />
-            {searchQuery.length > 0 && (
-              <Pressable onPress={() => setSearchQuery('')}>
-                <Text style={[styles.clearBtn, { color: colors.mutedForeground }]}>✕</Text>
-              </Pressable>
-            )}
+          {/* Title Section */}
+          <View style={styles.headerSection}>
+            <Text style={[styles.subtitle, { color: colors.primary }]}>
+              CONCIERGE VALET LOGISTICS
+            </Text>
+            <Text style={[styles.title, { color: colors.foreground, fontFamily: Fonts.display }]}>
+              Pickup Address
+            </Text>
+            <Text style={[styles.description, { color: colors.mutedForeground }]}>
+              Select your residence or office for complimentary door-to-door garment handover.
+            </Text>
           </View>
-        </View>
 
-        {/* Dark Map Graphic Preview Card */}
-        <View style={[styles.mapCard, { backgroundColor: colors.foreground }]}>
-          <View style={styles.mapGraphicInner}>
-            <View style={styles.mapGridLines} />
-            {/* Terracotta Pin Badge */}
-            <View style={[styles.mapPinBadge, { backgroundColor: colors.primary }]}>
-              <Text style={{ fontSize: 14, color: '#fff', fontWeight: 'bold' }}>●</Text>
+          {/* Search Bar Input Card */}
+          <View style={styles.searchSection}>
+            <View
+              style={[
+                styles.searchBox,
+                { backgroundColor: colors.cardBg, borderColor: colors.border },
+              ]}
+            >
+              <Text style={{ fontSize: 16, color: colors.mutedForeground }}>⌕</Text>
+              <TextInput
+                style={[styles.searchInput, { color: colors.foreground }]}
+                value={searchQuery}
+                onChangeText={setSearchQuery}
+                placeholder="Search Bengaluru locality, apartment, street..."
+                placeholderTextColor={colors.mutedForeground}
+              />
+              {isSearching ? (
+                <ActivityIndicator size="small" color={colors.primary} />
+              ) : searchQuery.length > 0 ? (
+                <Pressable onPress={() => setSearchQuery('')}>
+                  <Text style={[styles.clearBtn, { color: colors.mutedForeground }]}>✕</Text>
+                </Pressable>
+              ) : null}
             </View>
-            <View style={styles.mapCallout}>
-              <Text style={[styles.mapCalloutTitle, { color: colors.primary }]}>PICKUP LOCATION</Text>
-              <Text style={[styles.mapCalloutSub, { color: colors.primaryForeground }]}>
-                Indiranagar 12th Main Road
-              </Text>
-            </View>
-          </View>
-        </View>
 
-        {/* Saved Addresses Section */}
-        <View style={styles.sectionMargin}>
-          <Text style={[styles.sectionTitle, { color: colors.mutedForeground }]}>
-            SAVED ADDRESSES
-          </Text>
-
-          <View style={styles.addressList}>
-            {DemoData.addresses.map((addr) => {
-              const isSelected = selectedAddressId === addr.id;
-              return (
-                <Pressable
-                  key={addr.id}
-                  onPress={() => setSelectedAddressId(addr.id)}
-                  style={[
-                    styles.savedAddrCard,
-                    {
-                      backgroundColor: colors.cardBg,
-                      borderColor: isSelected ? colors.primary : colors.border,
-                    },
-                  ]}
-                >
-                  <View style={styles.addrCardLeft}>
-                    <View
-                      style={[
-                        styles.addrIconBox,
-                        { backgroundColor: isSelected ? '#f2e8dc' : colors.background },
-                      ]}
-                    >
-                      <Text style={{ fontSize: 16, color: colors.foreground }}>{addr.id === 'home' ? '⌂' : '日'}</Text>
-                    </View>
-                    <View style={{ flex: 1 }}>
-                      <Text style={[styles.addrLabelText, { color: colors.foreground }]}>
-                        {addr.label}
-                      </Text>
-                      <Text style={[styles.addrFullText, { color: colors.mutedForeground }]}>
-
-                        {addr.address}
-                      </Text>
-                    </View>
-                  </View>
-
-                  <View
-                    style={[
-                      styles.radioOuter,
-                      {
-                        borderColor: isSelected ? colors.primary : colors.border,
-                        backgroundColor: isSelected ? colors.primary : 'transparent',
-                      },
+            {/* Suggestions dropdown */}
+            {searchResults.length > 0 && (
+              <View
+                style={[
+                  styles.suggestionsBox,
+                  { backgroundColor: colors.cardBg, borderColor: colors.border },
+                ]}
+              >
+                {searchResults.map((item) => (
+                  <Pressable
+                    key={item.id}
+                    onPress={() => handleSelectSearchResult(item)}
+                    style={({ pressed }) => [
+                      styles.suggestionRow,
+                      { borderBottomColor: colors.border },
+                      pressed && { backgroundColor: colors.secondary },
                     ]}
                   >
-                    {isSelected && <Text style={styles.radioInner}>✓</Text>}
-                  </View>
-                </Pressable>
-              );
-            })}
+                    <View style={{ flex: 1 }}>
+                      <Text style={[styles.suggestionTitle, { color: colors.foreground }]}>
+                        {item.title}
+                      </Text>
+                      <Text
+                        style={[styles.suggestionSub, { color: colors.mutedForeground }]}
+                        numberOfLines={1}
+                      >
+                        {item.fullAddress}
+                      </Text>
+                    </View>
+                    <Text
+                      style={[
+                        styles.serviceBadge,
+                        {
+                          color: item.isServiceable ? colors.primary : colors.destructive,
+                          backgroundColor: item.isServiceable ? colors.secondary : '#fee2e2',
+                        },
+                      ]}
+                    >
+                      {item.isServiceable ? 'SERVICEABLE' : 'OUTSIDE ZONE'}
+                    </Text>
+                  </Pressable>
+                ))}
+              </View>
+            )}
           </View>
-        </View>
 
-        {/* Sequential Action -> Enters Main App Dashboard! */}
-        <View style={styles.actionSection}>
-          <GoldButton
-            title="CONFIRM LOCATION"
-            onPress={() => router.push('/dashboard')}
-            showArrow={true}
-          />
-        </View>
-      </ScrollView>
+          {/* Map Preview Canvas */}
+          <View style={[styles.mapCard, { backgroundColor: colors.foreground }]}>
+            <View style={styles.mapGraphicInner}>
+              <View style={styles.mapGridLines} />
+              {/* Concentric radar rings */}
+              <View style={styles.radarRingOuter} />
+              <View style={styles.radarRingInner} />
+
+              {/* Pin badge */}
+              <View style={[styles.mapPinBadge, { backgroundColor: colors.primary }]}>
+                <Text style={{ fontSize: 13, color: '#fff', fontWeight: 'bold' }}>●</Text>
+              </View>
+
+              {/* Pin Callout */}
+              <View style={styles.mapCallout}>
+                <Text style={[styles.mapCalloutTitle, { color: colors.primary }]}>
+                  {selectedLocation.isServiceable ? 'REHABOTH ATELIER SERVICED' : 'LIMITED SERVICE'}
+                </Text>
+                <Text style={[styles.mapCalloutSub, { color: colors.primaryForeground }]}>
+                  {selectedLocation.title}
+                </Text>
+                <Text style={styles.mapCoords}>
+                  {selectedLocation.coordinates.latitude.toFixed(4)}° N,{' '}
+                  {selectedLocation.coordinates.longitude.toFixed(4)}° E • PIN {selectedLocation.pincode}
+                </Text>
+              </View>
+            </View>
+          </View>
+
+          {/* Saved Addresses Section */}
+          <View style={styles.sectionMargin}>
+            <Text style={[styles.sectionTitle, { color: colors.mutedForeground }]}>
+              ATELIER SAVED ADDRESSES
+            </Text>
+
+            <View style={styles.addressList}>
+              {DEFAULT_COVERAGE_LOCATIONS.slice(0, 3).map((loc, idx) => {
+                const addrKey = idx === 0 ? 'home' : idx === 1 ? 'office' : 'residence';
+                const isSelected = selectedAddressId === addrKey;
+                const icon = idx === 0 ? '⌂' : idx === 1 ? '日' : '◈';
+                const label = idx === 0 ? 'Primary Residence' : idx === 1 ? 'Executive Office' : 'Studio Residence';
+
+                return (
+                  <Pressable
+                    key={loc.id}
+                    onPress={() => handleSelectSavedAddress(addrKey, loc)}
+                    style={({ pressed }) => [
+                      styles.savedAddrCard,
+                      {
+                        backgroundColor: colors.cardBg,
+                        borderColor: isSelected ? colors.primary : colors.border,
+                        borderWidth: isSelected ? 2 : 1,
+                      },
+                      pressed && { opacity: 0.9 },
+                    ]}
+                  >
+                    <View style={styles.addrCardLeft}>
+                      <View
+                        style={[
+                          styles.addrIconBox,
+                          { backgroundColor: isSelected ? colors.secondary : colors.background },
+                        ]}
+                      >
+                        <Text style={{ fontSize: 16, color: colors.foreground }}>{icon}</Text>
+                      </View>
+                      <View style={{ flex: 1 }}>
+                        <Text style={[styles.addrLabelText, { color: colors.foreground }]}>
+                          {label}
+                        </Text>
+                        <Text style={[styles.addrFullText, { color: colors.mutedForeground }]}>
+                          {loc.fullAddress}
+                        </Text>
+                      </View>
+                    </View>
+
+                    <View
+                      style={[
+                        styles.radioOuter,
+                        {
+                          borderColor: isSelected ? colors.primary : colors.border,
+                          backgroundColor: isSelected ? colors.primary : 'transparent',
+                        },
+                      ]}
+                    >
+                      {isSelected && <Text style={styles.radioInner}>✓</Text>}
+                    </View>
+                  </Pressable>
+                );
+              })}
+            </View>
+          </View>
+
+          {/* Confirm Action CTA */}
+          <View style={styles.actionSection}>
+            <GoldButton
+              title="CONFIRM PICKUP ADDRESS"
+              onPress={handleConfirmLocation}
+              showArrow={true}
+            />
+          </View>
+        </ScrollView>
       </FluidPage>
     </SafeAreaView>
   );
 }
-
 
 const styles = StyleSheet.create({
   container: {
@@ -154,8 +289,30 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingBottom: 40,
   },
+  headerSection: {
+    marginTop: 10,
+    marginBottom: 16,
+  },
+  subtitle: {
+    fontSize: 10,
+    fontWeight: '700',
+    letterSpacing: 2,
+    marginBottom: 4,
+  },
+  title: {
+    fontSize: 26,
+    fontWeight: '400',
+    letterSpacing: -0.5,
+  },
+  description: {
+    fontSize: 13,
+    lineHeight: 19,
+    marginTop: 4,
+  },
   searchSection: {
-    marginTop: 20,
+    marginBottom: 16,
+    position: 'relative',
+    zIndex: 10,
   },
   searchBox: {
     height: 52,
@@ -165,11 +322,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
-    shadowColor: '#3a3128',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.03,
-    shadowRadius: 6,
-    elevation: 1,
   },
   searchInput: {
     flex: 1,
@@ -179,18 +331,43 @@ const styles = StyleSheet.create({
     fontSize: 14,
     padding: 4,
   },
+  suggestionsBox: {
+    marginTop: 8,
+    borderRadius: 16,
+    borderWidth: 1,
+    overflow: 'hidden',
+  },
+  suggestionRow: {
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderBottomWidth: 1,
+    gap: 8,
+  },
+  suggestionTitle: {
+    fontSize: 13,
+    fontWeight: '600',
+  },
+  suggestionSub: {
+    fontSize: 11,
+    marginTop: 2,
+  },
+  serviceBadge: {
+    fontSize: 9,
+    fontWeight: '700',
+    letterSpacing: 0.5,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6,
+  },
   mapCard: {
-    height: 180,
+    height: 190,
     borderRadius: 24,
-    marginTop: 16,
     justifyContent: 'center',
     alignItems: 'center',
     overflow: 'hidden',
-    shadowColor: '#3a3128',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.04,
-    shadowRadius: 10,
-    elevation: 2,
   },
   mapGraphicInner: {
     alignItems: 'center',
@@ -203,14 +380,30 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: '100%',
     height: '100%',
-    opacity: 0.12,
+    opacity: 0.08,
     borderWidth: 1,
     borderColor: '#ffffff',
   },
+  radarRingOuter: {
+    position: 'absolute',
+    width: 140,
+    height: 140,
+    borderRadius: 70,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.08)',
+  },
+  radarRingInner: {
+    position: 'absolute',
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.12)',
+  },
   mapPinBadge: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
+    width: 38,
+    height: 38,
+    borderRadius: 19,
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: '#c1774f',
@@ -220,11 +413,11 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
   mapCallout: {
-    backgroundColor: 'rgba(255,255,255,0.15)',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
+    backgroundColor: 'rgba(255,255,255,0.12)',
+    paddingHorizontal: 14,
+    paddingVertical: 7,
     borderRadius: 12,
-    marginTop: 10,
+    marginTop: 8,
     alignItems: 'center',
   },
   mapCalloutTitle: {
@@ -233,9 +426,15 @@ const styles = StyleSheet.create({
     letterSpacing: 1.5,
   },
   mapCalloutSub: {
-    fontSize: 11,
-    fontWeight: '500',
+    fontSize: 12,
+    fontWeight: '600',
     marginTop: 2,
+  },
+  mapCoords: {
+    fontSize: 10,
+    color: 'rgba(255,255,255,0.6)',
+    marginTop: 2,
+    letterSpacing: 0.5,
   },
   sectionMargin: {
     marginTop: 24,
@@ -256,11 +455,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    shadowColor: '#3a3128',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.03,
-    shadowRadius: 6,
-    elevation: 1,
   },
   addrCardLeft: {
     flexDirection: 'row',
@@ -299,6 +493,6 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   actionSection: {
-    marginTop: 28,
+    marginTop: 24,
   },
 });
