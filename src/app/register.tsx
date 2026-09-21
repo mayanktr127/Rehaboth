@@ -7,12 +7,15 @@ import {
   Pressable,
   SafeAreaView,
   ScrollView,
+  ActivityIndicator,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTheme } from '../components/ThemeContext';
 import { GoldButton } from '../components/GoldButton';
 import { DemoData, Fonts } from '../constants/theme';
 import { TopHeaderNav } from '../components/TopHeaderNav';
+import { apiService } from '../services/api';
+import { validateIndianMobile } from '../domain';
 
 export default function RegisterScreen() {
   const router = useRouter();
@@ -22,8 +25,32 @@ export default function RegisterScreen() {
   const [fullName, setFullName] = useState(DemoData.user.fullName);
   const [mobileNumber, setMobileNumber] = useState(DemoData.user.phoneNumber);
   const [email, setEmail] = useState(DemoData.user.email);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const languages = ['English', 'हिन्दी', 'தமிழ்', 'తెలుగు'];
+
+  const handleSubmit = async () => {
+    const val = validateIndianMobile(mobileNumber);
+    if (!val.valid) {
+      setError(val.error || 'Please enter a valid 10-digit mobile number.');
+      return;
+    }
+    setLoading(true);
+    setError(null);
+    try {
+      await apiService.requestOtp({
+        phone: val.cleanedValue!,
+        fullName,
+        email,
+      });
+      router.push('/verification');
+    } catch (err: any) {
+      setError(err.message || 'Failed to dispatch verification code.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
@@ -118,13 +145,25 @@ export default function RegisterScreen() {
             />
           </View>
 
+          {error ? (
+            <Text style={{ color: '#D9534F', fontSize: 13, marginTop: 8, textAlign: 'center' }}>
+              {error}
+            </Text>
+          ) : null}
+
           {/* Sequential Action -> Verification Screen */}
-          <GoldButton
-            title="SEND VERIFICATION OTP"
-            onPress={() => router.push('/verification')}
-            style={styles.submitBtn}
-            showArrow={true}
-          />
+          {loading ? (
+            <View style={{ marginTop: 28, alignItems: 'center' }}>
+              <ActivityIndicator size="large" color={colors.primary} />
+            </View>
+          ) : (
+            <GoldButton
+              title="SEND VERIFICATION OTP"
+              onPress={handleSubmit}
+              style={styles.submitBtn}
+              showArrow={true}
+            />
+          )}
         </View>
 
         {/* Footer Links */}

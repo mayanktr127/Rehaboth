@@ -8,56 +8,67 @@ import {
   ScrollView,
   Alert,
 } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useTheme } from '../components/ThemeContext';
 import { TopHeaderNav } from '../components/TopHeaderNav';
 import { FloatingDockNav } from '../components/FloatingDockNav';
 import { Fonts } from '../constants/theme';
 import { JacketIcon } from '../components/ServiceIcons';
 import { FluidPage } from '../components/FluidMotion';
+import { useOrderStatus } from '../services/hooks';
+import { CardSkeleton } from '../components/SkeletonLoader';
+import { OrderStatusStage } from '../domain';
 
 export default function OrderStatusScreen() {
   const router = useRouter();
   const { colors } = useTheme();
+  const params = useLocalSearchParams<{ orderId?: string }>();
+  const { order, loading, error, refresh } = useOrderStatus(params.orderId);
 
-  const progressSteps = [
+  // Status mapping to pipeline step index
+  const statusStepIndex: Record<OrderStatusStage, number> = {
+    pickup_scheduled: 0,
+    custody_secured: 1,
+    studio_intake: 2,
+    active_steaming: 3,
+    artisan_qa: 4,
+    en_route_delivery: 5,
+    delivered: 6,
+    cancelled: -1,
+  };
+
+  const currentStep = order ? (statusStepIndex[order.status] ?? 3) : 3;
+
+  const defaultPipeline = [
     {
       title: 'Pickup Scheduled',
       desc: 'Delivery partner assigned, pickup inbound',
-      completed: true,
-      active: false,
     },
     {
       title: 'Secured & Picked Up',
-      desc: 'Garments cataloged and tag registered',
-      completed: true,
-      active: false,
+      desc: 'Garments cataloged with tamper-evident seal',
     },
     {
       title: 'Arrived at Processing Studio',
-      desc: 'Detailed inspect at Carlyle Studio',
-      completed: true,
-      active: false,
+      desc: 'Detailed fiber inspection at Carlyle Studio',
     },
     {
       title: 'Active Pressing & Steam',
-      desc: 'French lavender vapor finish in progress',
-      completed: true,
-      active: true,
+      desc: 'Atelier French lavender vapor finish in progress',
     },
     {
       title: 'Artisan Quality Assurance',
-      desc: 'Zero-deflect seam check.',
-      completed: false,
-      active: false,
+      desc: 'Zero-defect seam & hand-rolled lapel check',
     },
     {
       title: 'En Route to Wardrobe',
-      desc: 'Sealed storage delivery run.',
-      completed: false,
-      active: false,
+      desc: 'Climate-controlled sealed delivery run',
     },
   ];
+
+  const canCancel = order && !['delivered', 'cancelled', 'artisan_qa', 'en_route_delivery'].includes(order.status);
+  const isDelivered = order?.status === 'delivered';
+  const isCancelled = order?.status === 'cancelled';
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
@@ -73,124 +84,205 @@ export default function OrderStatusScreen() {
           {/* Top Header */}
           <TopHeaderNav showBack={true} onBackPress={() => router.push('/dashboard')} />
 
-          {/* Estimated Delivery Banner */}
-          <View style={styles.deliverySection}>
-            <Text style={[styles.sectionTitle, { color: colors.mutedForeground }]}>
-              ESTIMATED DELIVERY
-            </Text>
-            <Text style={[styles.deliveryDate, { color: colors.foreground, fontFamily: Fonts.display }]}>
-              Tomorrow, 5:00 PM
-            </Text>
-          </View>
-
-          {/* Delivery Partner Custodian Card */}
-          <View style={[styles.partnerCard, { backgroundColor: colors.foreground }]}>
-            <View style={styles.partnerInfoRow}>
-              <View style={[styles.avatarCircle, { backgroundColor: '#f2e8dc' }]}>
-                <JacketIcon size={22} />
+          {loading ? (
+            <View style={{ marginTop: 24 }}>
+              <CardSkeleton />
+              <View style={{ marginTop: 20 }}>
+                <CardSkeleton />
               </View>
-              <View style={{ flex: 1 }}>
-                <Text style={[styles.partnerName, { color: colors.primaryForeground }]}>Delivery Partner: Rajesh</Text>
-                <Text style={styles.partnerId}>Custodian ID: #ST-VAL-904</Text>
-              </View>
+            </View>
+          ) : error ? (
+            <View style={[styles.errorCard, { backgroundColor: colors.cardBg, borderColor: colors.border }]}>
+              <Text style={[styles.errorTitle, { color: colors.foreground, fontFamily: Fonts.display }]}>
+                Order status unavailable
+              </Text>
+              <Text style={[styles.errorDesc, { color: colors.mutedForeground }]}>
+                {error || 'Unable to retrieve your order timeline.'}
+              </Text>
               <Pressable
-                onPress={() => Alert.alert('Calling Custodian', 'Dialing +91 98765 43210...')}
-                style={({ pressed }) => [
-                  styles.telBadge,
-                  { borderColor: colors.primary },
-                  pressed && { opacity: 0.7 },
-                ]}
+                onPress={refresh}
+                style={[styles.retryBtn, { backgroundColor: colors.primary }]}
               >
-                <Text style={[styles.telText, { color: colors.primary }]}>TEL</Text>
+                <Text style={styles.retryBtnText}>Retry</Text>
               </Pressable>
             </View>
-          </View>
-
-          {/* Order Progress Timeline */}
-          <View style={styles.timelineSection}>
-            <Text style={[styles.sectionTitle, { color: colors.mutedForeground }]}>
-              ORDER PROGRESS
-            </Text>
-
-
-
-          <View style={styles.timelineList}>
-            {progressSteps.map((step, idx) => {
-              const isLast = idx === progressSteps.length - 1;
-              return (
-                <View key={idx} style={styles.timelineItemRow}>
-                  {/* Left Column */}
-                  <View style={styles.leftCol}>
-                    {step.completed && !step.active ? (
-                      <View style={[styles.stepCircleActive, { backgroundColor: colors.primary }]}>
-                        <Text style={styles.stepCheck}>✓</Text>
-                      </View>
-                    ) : step.active ? (
-                      <View style={[styles.stepCircleCurrent, { borderColor: colors.primary, backgroundColor: colors.cardBg }]}>
-                        <View style={[styles.stepInnerDot, { backgroundColor: colors.primary }]} />
-                      </View>
-                    ) : (
-                      <View style={[styles.stepCircleInactive, { borderColor: colors.border, backgroundColor: colors.cardBg }]} />
-                    )}
-                    {!isLast && (
-                      <View
-                        style={[
-                          styles.verticalLine,
-                          {
-                            backgroundColor: step.completed
-                              ? colors.primary
-                              : colors.border,
-                          },
-                        ]}
-                      />
-                    )}
-                  </View>
-
-
-                  {/* Right Column */}
-                  <View style={styles.rightCol}>
-                    <Text
-                      style={[
-                        styles.stepTitle,
-                        {
-                          color: step.active
-                            ? colors.primary
-                            : step.completed
-                            ? colors.foreground
-                            : colors.mutedForeground,
-                          fontWeight: step.active ? '700' : '600',
-                        },
-                      ]}
-                    >
-                      {step.title}
-                    </Text>
-                    <Text
-                      style={[
-                        styles.stepDesc,
-                        {
-                          color: step.completed ? colors.textSecondary : colors.mutedForeground,
-                        },
-                      ]}
-                    >
-                      {step.desc}
-                    </Text>
-                  </View>
+          ) : (
+            <>
+              {/* Estimated Delivery Banner */}
+              <View style={styles.deliverySection}>
+                <View style={styles.headerRow}>
+                  <Text style={[styles.sectionTitle, { color: colors.mutedForeground }]}>
+                    {isCancelled ? 'ORDER CANCELLED' : 'ESTIMATED DELIVERY'}
+                  </Text>
+                  <Text style={[styles.orderNumberBadge, { color: colors.primary }]}>
+                    #{order?.orderNumber || 'ST-9482'}
+                  </Text>
                 </View>
-              );
-            })}
-          </View>
-        </View>
+                <Text style={[styles.deliveryDate, { color: isCancelled ? colors.destructive : colors.foreground, fontFamily: Fonts.display }]}>
+                  {isCancelled ? 'Booking Withdrawn' : (order?.estimatedDelivery || 'Tomorrow, 5:00 PM')}
+                </Text>
+              </View>
+
+              {/* Delivery Partner Custodian Card */}
+              <View style={[styles.partnerCard, { backgroundColor: colors.foreground }]}>
+                <View style={styles.partnerInfoRow}>
+                  <View style={[styles.avatarCircle, { backgroundColor: '#f2e8dc' }]}>
+                    <JacketIcon size={22} />
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <Text style={[styles.partnerName, { color: colors.primaryForeground }]}>
+                      Custodian: {order?.custodianName || 'Rajesh K.'}
+                    </Text>
+                    <Text style={styles.partnerId}>
+                      Valet Token: {order?.custodianId || '#ST-VAL-904'} • {order?.garmentCount || 4} Garments
+                    </Text>
+                  </View>
+                  <Pressable
+                    onPress={() => Alert.alert('Calling Custodian', `Dialing ${order?.custodianPhone || '+91 98765 43210'}...`)}
+                    style={({ pressed }) => [
+                      styles.telBadge,
+                      { borderColor: colors.primary },
+                      pressed && { opacity: 0.7 },
+                    ]}
+                  >
+                    <Text style={[styles.telText, { color: colors.primary }]}>TEL</Text>
+                  </Pressable>
+                </View>
+              </View>
+
+              {/* Handover PIN Quick Action */}
+              {order?.handoverCode && (
+                <Pressable
+                  onPress={() => router.push('/secure-handover')}
+                  style={[styles.pinCallout, { backgroundColor: colors.cardBg, borderColor: colors.border }]}
+                >
+                  <Text style={[styles.pinCalloutLabel, { color: colors.mutedForeground }]}>HANDOVER VERIFICATION PIN</Text>
+                  <Text style={[styles.pinCalloutValue, { color: colors.primary, fontFamily: Fonts.display }]}>
+                    {order.handoverCode}
+                  </Text>
+                  <Text style={[styles.pinCalloutSub, { color: colors.mutedForeground }]}>
+                    Share with your courier upon doorstep exchange.
+                  </Text>
+                </Pressable>
+              )}
+
+              {/* Order Progress Timeline */}
+              <View style={styles.timelineSection}>
+                <Text style={[styles.sectionTitle, { color: colors.mutedForeground }]}>
+                  ORDER PROGRESS
+                </Text>
+
+                <View style={styles.timelineList}>
+                  {defaultPipeline.map((step, idx) => {
+                    const isLast = idx === defaultPipeline.length - 1;
+                    const isCompleted = !isCancelled && idx < currentStep;
+                    const isActive = !isCancelled && idx === currentStep;
+
+                    return (
+                      <View key={idx} style={styles.timelineItemRow}>
+                        {/* Left Column */}
+                        <View style={styles.leftCol}>
+                          {isCompleted ? (
+                            <View style={[styles.stepCircleActive, { backgroundColor: colors.primary }]}>
+                              <Text style={styles.stepCheck}>✓</Text>
+                            </View>
+                          ) : isActive ? (
+                            <View style={[styles.stepCircleCurrent, { borderColor: colors.primary, backgroundColor: colors.cardBg }]}>
+                              <View style={[styles.stepInnerDot, { backgroundColor: colors.primary }]} />
+                            </View>
+                          ) : (
+                            <View style={[styles.stepCircleInactive, { borderColor: colors.border, backgroundColor: colors.cardBg }]} />
+                          )}
+                          {!isLast && (
+                            <View
+                              style={[
+                                styles.verticalLine,
+                                {
+                                  backgroundColor: isCompleted
+                                    ? colors.primary
+                                    : colors.border,
+                                },
+                              ]}
+                            />
+                          )}
+                        </View>
+
+                        {/* Right Column */}
+                        <View style={styles.rightCol}>
+                          <Text
+                            style={[
+                              styles.stepTitle,
+                              {
+                                color: isActive
+                                  ? colors.primary
+                                  : isCompleted
+                                  ? colors.foreground
+                                  : colors.mutedForeground,
+                                fontWeight: isActive ? '700' : '600',
+                              },
+                            ]}
+                          >
+                            {step.title}
+                          </Text>
+                          <Text
+                            style={[
+                              styles.stepDesc,
+                              {
+                                color: isCompleted || isActive ? colors.textSecondary : colors.mutedForeground,
+                              },
+                            ]}
+                          >
+                            {step.desc}
+                          </Text>
+                        </View>
+                      </View>
+                    );
+                  })}
+                </View>
+              </View>
+
+              {/* Action Buttons */}
+              <View style={styles.actionsContainer}>
+                {canCancel && (
+                  <Pressable
+                    onPress={() => router.push(`/cancel-order?orderId=${order.id}` as any)}
+                    style={({ pressed }) => [
+                      styles.cancelButton,
+                      { borderColor: colors.border, backgroundColor: colors.cardBg },
+                      pressed && { opacity: 0.8 },
+                    ]}
+                  >
+                    <Text style={[styles.cancelButtonText, { color: colors.destructive }]}>
+                      Cancel Order & View Refund Policy
+                    </Text>
+                  </Pressable>
+                )}
+
+                {isDelivered && (
+                  <Pressable
+                    onPress={() => router.push(`/rate-delivery?orderId=${order.id}` as any)}
+                    style={({ pressed }) => [
+                      styles.primaryActionButton,
+                      { backgroundColor: colors.primary },
+                      pressed && { opacity: 0.9 },
+                    ]}
+                  >
+                    <Text style={styles.primaryActionText}>
+                      Rate Service Experience ★★★★★
+                    </Text>
+                  </Pressable>
+                )}
+              </View>
+            </>
+          )}
         </ScrollView>
       </FluidPage>
-
 
       {/* Floating Bottom Dock Navigation */}
       <FloatingDockNav />
     </SafeAreaView>
   );
 }
-
-
 
 const styles = StyleSheet.create({
   container: {
@@ -204,11 +296,21 @@ const styles = StyleSheet.create({
   deliverySection: {
     marginTop: 20,
   },
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 6,
+  },
   sectionTitle: {
     fontSize: 11,
     fontWeight: '600',
     letterSpacing: 1.5,
-    marginBottom: 6,
+  },
+  orderNumberBadge: {
+    fontSize: 12,
+    fontWeight: '700',
+    letterSpacing: 1,
   },
   deliveryDate: {
     fontSize: 28,
@@ -256,6 +358,26 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontWeight: '700',
     letterSpacing: 1,
+  },
+  pinCallout: {
+    marginTop: 18,
+    borderRadius: 20,
+    borderWidth: 1,
+    padding: 16,
+    alignItems: 'center',
+  },
+  pinCalloutLabel: {
+    fontSize: 10,
+    fontWeight: '700',
+    letterSpacing: 1.2,
+  },
+  pinCalloutValue: {
+    fontSize: 28,
+    letterSpacing: 6,
+    marginVertical: 4,
+  },
+  pinCalloutSub: {
+    fontSize: 12,
   },
   timelineSection: {
     marginTop: 28,
@@ -310,7 +432,6 @@ const styles = StyleSheet.create({
     flex: 1,
     marginVertical: 4,
   },
-
   rightCol: {
     flex: 1,
     paddingLeft: 12,
@@ -323,5 +444,55 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginTop: 3,
     lineHeight: 16,
+  },
+  actionsContainer: {
+    marginTop: 24,
+    gap: 12,
+  },
+  cancelButton: {
+    borderWidth: 1,
+    borderRadius: 18,
+    paddingVertical: 14,
+    alignItems: 'center',
+  },
+  cancelButtonText: {
+    fontSize: 13,
+    fontWeight: '600',
+  },
+  primaryActionButton: {
+    borderRadius: 18,
+    paddingVertical: 14,
+    alignItems: 'center',
+  },
+  primaryActionText: {
+    color: '#fffaf4',
+    fontSize: 14,
+    fontWeight: '700',
+  },
+  errorCard: {
+    marginTop: 28,
+    padding: 24,
+    borderRadius: 20,
+    borderWidth: 1,
+    alignItems: 'center',
+  },
+  errorTitle: {
+    fontSize: 18,
+    marginBottom: 8,
+  },
+  errorDesc: {
+    fontSize: 13,
+    textAlign: 'center',
+    marginBottom: 16,
+  },
+  retryBtn: {
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 999,
+  },
+  retryBtnText: {
+    color: '#fff',
+    fontWeight: '600',
+    fontSize: 13,
   },
 });

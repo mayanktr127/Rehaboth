@@ -36,6 +36,7 @@ export const Colors = {
     goldBorder: '#ece3d6',
     goldGradient: ['#c1774f', '#a35a34'],
     greenAccent: '#2ECC71',
+    destructive: '#c0392b',
     white: '#fffdf9',
   },
   dark: {
@@ -71,6 +72,7 @@ export const Colors = {
     goldBorder: '#3f362d',
     goldGradient: ['#d68b61', '#c1774f'],
     greenAccent: '#2ECC71',
+    destructive: '#e05343',
     white: '#fffdf9',
   },
 };

@@ -13,6 +13,8 @@ import { FloatingDockNav } from '../components/FloatingDockNav';
 import { AuraOrb } from '../components/AuraOrb';
 import { Fonts, DemoData } from '../constants/theme';
 import { FluidPage } from '../components/FluidMotion';
+import { useOrders, useProfile } from '../services/hooks';
+import { CardSkeleton } from '../components/SkeletonLoader';
 
 import {
   BasketIcon,
@@ -28,6 +30,8 @@ import {
 export default function DashboardScreen() {
   const router = useRouter();
   const { colors } = useTheme();
+  const { orders, activeOrder, loading: ordersLoading } = useOrders();
+  const { profile, loading: profileLoading } = useProfile();
 
   const services = [
     {
@@ -108,7 +112,7 @@ export default function DashboardScreen() {
             ATELIER STEAM & PRESS
           </Text>
           <Text style={[styles.greetingLine, { color: colors.foreground, fontFamily: Fonts.display }]}>
-            Hello, {DemoData.user.fullName.split(' ')[0]}
+            Hello, {profile?.fullName?.split(' ')[0] || DemoData.user.fullName.split(' ')[0]}
           </Text>
           <Text style={[styles.greetingTagline, { color: colors.mutedForeground }]}>
             Your wardrobe valet is active for Indiranagar.
@@ -119,15 +123,17 @@ export default function DashboardScreen() {
         <View style={styles.summaryRow}>
           <View style={styles.counterGroup}>
             <Text style={[styles.counterLive, { color: colors.foreground, fontFamily: Fonts.display }]}>
-              01
+              {String(orders.filter(o => !['delivered', 'cancelled'].includes(o.status)).length).padStart(2, '0')}
             </Text>
             <View style={[styles.counterDivider, { backgroundColor: colors.border }]} />
             <Text style={[styles.counterFaded, { color: colors.mutedForeground, fontFamily: Fonts.display }]}>
-              04
+              {String(activeOrder?.garmentCount || orders.length || 4).padStart(2, '0')}
             </Text>
             <View style={styles.counterLabelBox}>
               <Text style={[styles.counterLabelLine, { color: colors.foreground }]}>Active Session</Text>
-              <Text style={[styles.counterLabelSub, { color: colors.mutedForeground }]}>4 Pieces in Studio</Text>
+              <Text style={[styles.counterLabelSub, { color: colors.mutedForeground }]}>
+                {activeOrder ? `${activeOrder.garmentCount} Pieces in Studio` : 'Ready for Pickup'}
+              </Text>
             </View>
           </View>
 
@@ -144,72 +150,77 @@ export default function DashboardScreen() {
         </View>
 
         {/* Live Order Tracker Banner Card */}
-        <View style={[styles.liveTrackerCard, { backgroundColor: colors.cardBg, borderColor: colors.border }]}>
-          <View style={styles.trackerHeader}>
-            <View style={styles.liveIndicatorRow}>
-              <View style={[styles.pulseDot, { backgroundColor: colors.primary }]} />
-              <Text style={[styles.liveText, { color: colors.primary }]}>
-                LIVE VALET STATUS
-              </Text>
-            </View>
-            <Text style={[styles.orderIdBadge, { color: colors.mutedForeground }]}>#ST-9482</Text>
+        {ordersLoading ? (
+          <View style={{ marginVertical: 12 }}>
+            <CardSkeleton />
           </View>
-
-          <Text style={[styles.trackerTitle, { color: colors.foreground, fontFamily: Fonts.display }]}>
-            Silk & Tweed Finishing
-          </Text>
-          <Text style={[styles.trackerSub, { color: colors.mutedForeground }]}>
-            Valet Partner Suresh • Expected Doorstep: Today 6:30 PM
-          </Text>
-
-
-          {/* Stepper Progress Pipeline */}
-          <View style={styles.stepperContainer}>
-            <View style={styles.stepItem}>
-              <View style={[styles.stepCircleActive, { backgroundColor: colors.primary }]}>
-                <Text style={styles.stepCheck}>✓</Text>
+        ) : activeOrder ? (
+          <View style={[styles.liveTrackerCard, { backgroundColor: colors.cardBg, borderColor: colors.border }]}>
+            <View style={styles.trackerHeader}>
+              <View style={styles.liveIndicatorRow}>
+                <View style={[styles.pulseDot, { backgroundColor: colors.primary }]} />
+                <Text style={[styles.liveText, { color: colors.primary }]}>
+                  {activeOrder.status.replace(/_/g, ' ').toUpperCase()}
+                </Text>
               </View>
-              <Text style={[styles.stepLabel, { color: colors.foreground }]}>Picked Up</Text>
+              <Text style={[styles.orderIdBadge, { color: colors.mutedForeground }]}>#{activeOrder.orderNumber}</Text>
             </View>
-            <View style={[styles.stepLineActive, { backgroundColor: colors.primary }]} />
 
-            <View style={styles.stepItem}>
-              <View style={[styles.stepCircleActive, { backgroundColor: colors.primary }]}>
-                <Text style={styles.stepCheck}>✓</Text>
-              </View>
-              <Text style={[styles.stepLabel, { color: colors.foreground }]}>Steam Press</Text>
-            </View>
-            <View style={[styles.stepLineInactive, { backgroundColor: colors.border }]} />
-
-            <View style={styles.stepItem}>
-              <View style={[styles.stepCircleCurrent, { borderColor: colors.primary, backgroundColor: colors.cardBg }]}>
-                <View style={[styles.stepInnerDot, { backgroundColor: colors.primary }]} />
-              </View>
-              <Text style={[styles.stepLabel, { color: colors.foreground }]}>Quality Check</Text>
-            </View>
-            <View style={[styles.stepLineInactive, { backgroundColor: colors.border }]} />
-
-            <View style={styles.stepItem}>
-              <View style={[styles.stepCircleInactive, { borderColor: colors.border, backgroundColor: colors.cardBg }]} />
-              <Text style={[styles.stepLabel, { color: colors.mutedForeground }]}>Delivery</Text>
-            </View>
-          </View>
-
-          {/* Welded Action Button */}
-          <Pressable
-            onPress={() => router.push('/order-status')}
-            style={({ pressed }) => [
-              styles.weldedCtaBar,
-              { backgroundColor: colors.secondary },
-              pressed && { opacity: 0.88 },
-            ]}
-          >
-            <Text style={[styles.weldedCtaText, { color: colors.foreground }]}>
-              View Live Tracking & Custodian Details
+            <Text style={[styles.trackerTitle, { color: colors.foreground, fontFamily: Fonts.display }]}>
+              Atelier Steam & Garment Care
             </Text>
-            <Text style={[styles.weldedCtaArrow, { color: colors.foreground }]}>→</Text>
-          </Pressable>
-        </View>
+            <Text style={[styles.trackerSub, { color: colors.mutedForeground }]}>
+              Valet Custodian {activeOrder.custodianName || 'Assigned'} • Expected: {activeOrder.estimatedDelivery || 'Today 6:30 PM'}
+            </Text>
+
+            {/* Stepper Progress Pipeline */}
+            <View style={styles.stepperContainer}>
+              <View style={styles.stepItem}>
+                <View style={[styles.stepCircleActive, { backgroundColor: colors.primary }]}>
+                  <Text style={styles.stepCheck}>✓</Text>
+                </View>
+                <Text style={[styles.stepLabel, { color: colors.foreground }]}>Pickup</Text>
+              </View>
+              <View style={[styles.stepLineActive, { backgroundColor: colors.primary }]} />
+
+              <View style={styles.stepItem}>
+                <View style={[styles.stepCircleActive, { backgroundColor: colors.primary }]}>
+                  <Text style={styles.stepCheck}>✓</Text>
+                </View>
+                <Text style={[styles.stepLabel, { color: colors.foreground }]}>Steam</Text>
+              </View>
+              <View style={[styles.stepLineInactive, { backgroundColor: colors.border }]} />
+
+              <View style={styles.stepItem}>
+                <View style={[styles.stepCircleCurrent, { borderColor: colors.primary, backgroundColor: colors.cardBg }]}>
+                  <View style={[styles.stepInnerDot, { backgroundColor: colors.primary }]} />
+                </View>
+                <Text style={[styles.stepLabel, { color: colors.foreground }]}>Inspection</Text>
+              </View>
+              <View style={[styles.stepLineInactive, { backgroundColor: colors.border }]} />
+
+              <View style={styles.stepItem}>
+                <View style={[styles.stepCircleInactive, { borderColor: colors.border, backgroundColor: colors.cardBg }]} />
+                <Text style={[styles.stepLabel, { color: colors.mutedForeground }]}>Delivery</Text>
+              </View>
+            </View>
+
+            {/* Welded Action Button */}
+            <Pressable
+              onPress={() => router.push(`/order-status?orderId=${activeOrder.id}` as any)}
+              style={({ pressed }) => [
+                styles.weldedCtaBar,
+                { backgroundColor: colors.secondary },
+                pressed && { opacity: 0.88 },
+              ]}
+            >
+              <Text style={[styles.weldedCtaText, { color: colors.foreground }]}>
+                View Live Tracking & Custodian Details
+              </Text>
+              <Text style={[styles.weldedCtaArrow, { color: colors.foreground }]}>→</Text>
+            </Pressable>
+          </View>
+        ) : null}
 
         {/* 2-Column Services Grid */}
         <View style={styles.gridSection}>
