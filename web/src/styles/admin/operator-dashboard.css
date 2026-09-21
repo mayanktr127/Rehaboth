@@ -1,34 +1,37 @@
-/* Operator Command Tower Styles */
+/* Operator Command Tower Styles - Styled with Rehaboth Steam Website Luxury Palette */
 .tower-page {
   min-height: 100vh;
-  background: #0d0d0f;
-  color: #f7f4ef;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background-color: var(--bg-main, #faf6ef);
+  color: var(--color-foreground, #1a1714);
+  font-family: var(--font-sans, 'Plus Jakarta Sans', system-ui, sans-serif);
   display: flex;
 }
 
 .tower-sidebar {
   width: 260px;
-  background: #131317;
-  border-right: 1px solid rgba(255, 255, 255, 0.08);
-  padding: 24px 16px;
+  background-color: #f6eee3;
+  border-right: 1px solid var(--color-border, #e6dcce);
+  padding: 28px 18px;
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
+  box-shadow: var(--shadow-sm, 0 2px 6px rgba(58, 49, 40, 0.04));
 }
 
 .tower-brand {
-  font-size: 1.1rem;
+  font-family: var(--font-serif, 'Playfair Display', Georgia, serif);
+  font-size: 1.25rem;
   font-weight: 800;
-  letter-spacing: 2px;
-  color: #e8c36a;
+  letter-spacing: 1.5px;
+  color: var(--color-primary, #b86538);
   margin-bottom: 4px;
 }
 
 .tower-brand-sub {
-  font-size: 0.7rem;
-  color: #8f8a82;
-  letter-spacing: 1.5px;
+  font-size: 0.68rem;
+  color: var(--color-muted-foreground, #7d7265);
+  letter-spacing: 1.2px;
+  font-weight: 700;
   margin-bottom: 24px;
 }
 
@@ -47,32 +50,34 @@
   background: transparent;
   text-align: left;
   font: inherit;
-  font-size: 0.84rem;
+  font-size: 0.86rem;
   padding: 10px 14px;
-  border-radius: 8px;
-  color: #b8b3aa;
+  border-radius: 10px;
+  color: var(--color-muted-foreground, #7d7265);
+  font-weight: 600;
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: 10px;
-  transition: all 0.15s ease;
+  transition: all 0.2s ease;
 }
 
 .tower-nav__item:hover {
-  background: rgba(255, 255, 255, 0.04);
-  color: #ffffff;
+  background: rgba(184, 101, 56, 0.08);
+  color: var(--color-primary, #b86538);
 }
 
 .tower-nav__item--active {
-  background: rgba(209, 151, 55, 0.12);
-  color: #d19737;
-  border: 1px solid rgba(209, 151, 55, 0.25);
-  font-weight: 600;
+  background: var(--bg-card, #ffffff);
+  color: var(--color-primary, #b86538);
+  border: 1px solid var(--color-border, #e6dcce);
+  box-shadow: 0 2px 6px rgba(58, 49, 40, 0.06);
+  font-weight: 700;
 }
 
 .tower-nav-icon {
   font-size: 0.95rem;
-  width: 18px;
+  width: 20px;
   text-align: center;
 }
 
@@ -81,6 +86,7 @@
   padding: 32px 40px;
   overflow-y: auto;
   max-width: 1300px;
+  background-color: var(--bg-main, #faf6ef);
 }
 
 .tower-top-header {
@@ -91,15 +97,17 @@
 }
 
 .tower-header-title {
-  font-size: 1.8rem;
+  font-family: var(--font-serif, 'Playfair Display', Georgia, serif);
+  font-size: 2rem;
   font-weight: 700;
   margin: 4px 0;
-  color: #ffffff;
+  color: var(--color-foreground, #1a1714);
+  letter-spacing: -0.5px;
 }
 
 .tower-header-sub {
-  color: #8f8a82;
-  font-size: 0.85rem;
+  color: var(--color-muted-foreground, #7d7265);
+  font-size: 0.88rem;
 }
 
 .tower-header-meta {
@@ -109,14 +117,21 @@
 }
 
 .tower-role-select {
-  background: #1a1a20;
-  color: #e8c36a;
-  border: 1px solid rgba(209, 151, 55, 0.4);
-  padding: 6px 14px;
-  border-radius: 8px;
+  background: var(--bg-card, #ffffff);
+  color: var(--color-foreground, #1a1714);
+  border: 1.5px solid var(--color-border, #e6dcce);
+  padding: 8px 16px;
+  border-radius: 10px;
   font-size: 0.82rem;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
+  box-shadow: var(--shadow-sm, 0 2px 6px rgba(58, 49, 40, 0.04));
+  transition: border-color 0.2s ease;
+}
+
+.tower-role-select:focus {
+  border-color: var(--color-primary, #b86538);
+  outline: none;
 }
 
 .tower-kpi-grid {
@@ -127,40 +142,44 @@
 }
 
 .tower-kpi-card {
-  background: #141418;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
-  padding: 18px;
+  background: var(--bg-card, #ffffff);
+  border: 1px solid var(--color-border, #e6dcce);
+  border-radius: 14px;
+  padding: 20px;
   display: flex;
   flex-direction: column;
   gap: 6px;
+  box-shadow: var(--shadow-sm, 0 2px 6px rgba(58, 49, 40, 0.04));
 }
 
 .tower-kpi-card span {
   font-size: 0.72rem;
-  color: #8f8a82;
-  font-weight: 600;
-  letter-spacing: 1px;
+  color: var(--color-muted-foreground, #7d7265);
+  font-weight: 700;
+  letter-spacing: 0.8px;
 }
 
 .tower-kpi-card strong {
-  font-size: 1.8rem;
-  font-weight: 800;
-  color: #e8c36a;
+  font-family: var(--font-serif, 'Playfair Display', Georgia, serif);
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--color-primary, #b86538);
 }
 
 .tower-card {
-  background: #141418;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 14px;
+  background: var(--bg-card, #ffffff);
+  border: 1px solid var(--color-border, #e6dcce);
+  border-radius: 16px;
   padding: 24px;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow-sm, 0 2px 6px rgba(58, 49, 40, 0.04));
 }
 
 .tower-card-title {
-  font-size: 1.05rem;
+  font-family: var(--font-serif, 'Playfair Display', Georgia, serif);
+  font-size: 1.15rem;
   font-weight: 700;
-  color: #ffffff;
+  color: var(--color-foreground, #1a1714);
   margin-top: 0;
   margin-bottom: 16px;
   display: flex;
@@ -188,27 +207,27 @@
   width: 14px;
   height: 14px;
   border-radius: 50%;
-  background: #2a2a32;
-  border: 2px solid #3a3a44;
+  background: #e6dcce;
+  border: 2px solid #d8cbba;
   margin-bottom: 8px;
   transition: all 0.2s ease;
 }
 
 .tower-stepper-dot--active {
-  background: #d19737;
-  border-color: #e8c36a;
-  box-shadow: 0 0 10px rgba(209, 151, 55, 0.5);
+  background: var(--color-primary, #b86538);
+  border-color: #8f461f;
+  box-shadow: 0 0 10px rgba(184, 101, 56, 0.35);
 }
 
 .tower-stepper-label {
-  font-size: 0.72rem;
-  color: #7d786f;
+  font-size: 0.74rem;
+  color: var(--color-muted-foreground, #7d7265);
   text-align: center;
 }
 
 .tower-stepper-label--active {
-  color: #e8c36a;
-  font-weight: 600;
+  color: var(--color-primary, #b86538);
+  font-weight: 700;
 }
 
 .tower-table {
@@ -219,22 +238,23 @@
 
 .tower-table th {
   text-align: left;
-  padding: 10px 12px;
-  color: #8f8a82;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  font-weight: 600;
+  padding: 12px 14px;
+  color: var(--color-muted-foreground, #7d7265);
+  background: #faf5ed;
+  border-bottom: 1.5px solid var(--color-border, #e6dcce);
+  font-weight: 700;
   font-size: 0.75rem;
   letter-spacing: 0.8px;
 }
 
 .tower-table td {
-  padding: 12px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  color: #f4f1ea;
+  padding: 14px 12px;
+  border-bottom: 1px solid var(--color-border, #e6dcce);
+  color: var(--color-foreground, #1a1714);
 }
 
 .tower-table tr:hover td {
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(184, 101, 56, 0.03);
 }
 
 .tower-badge {
@@ -247,67 +267,83 @@
 }
 
 .tower-badge--gold {
-  background: rgba(209, 151, 55, 0.15);
-  color: #e8c36a;
-  border: 1px solid rgba(209, 151, 55, 0.3);
+  background: #fdf6ec;
+  color: var(--color-primary, #b86538);
+  border: 1px solid #ebd0ba;
 }
 
 .tower-badge--green {
-  background: rgba(61, 220, 132, 0.15);
-  color: #3ddc84;
-  border: 1px solid rgba(61, 220, 132, 0.3);
+  background: #e8f5e9;
+  color: #2e7d32;
+  border: 1px solid #c8e6c9;
 }
 
 .tower-badge--red {
-  background: rgba(243, 139, 139, 0.15);
-  color: #f38b8b;
-  border: 1px solid rgba(243, 139, 139, 0.3);
+  background: #ffebee;
+  color: #c62828;
+  border: 1px solid #ffcdd2;
 }
 
 .tower-btn {
   border: 0;
-  background: #d19737;
-  color: #110d08;
+  background: var(--color-primary, #b86538);
+  color: #ffffff;
   padding: 9px 18px;
   border-radius: 8px;
   font-weight: 700;
   font-size: 0.82rem;
   cursor: pointer;
-  transition: opacity 0.15s ease;
+  transition: all 0.15s ease;
+  box-shadow: 0 2px 6px rgba(184, 101, 56, 0.2);
 }
 
 .tower-btn:hover {
-  opacity: 0.9;
+  background: var(--color-primary-hover, #a2552c);
+  box-shadow: 0 4px 10px rgba(184, 101, 56, 0.3);
+}
+
+.tower-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .tower-btn--outline {
-  background: transparent;
-  border: 1px solid rgba(209, 151, 55, 0.5);
-  color: #e8c36a;
+  background: #ffffff;
+  border: 1.5px solid var(--color-border, #e6dcce);
+  color: var(--color-foreground, #1a1714);
+  box-shadow: none;
 }
 
 .tower-btn--outline:hover {
-  background: rgba(209, 151, 55, 0.1);
+  border-color: var(--color-primary, #b86538);
+  color: var(--color-primary, #b86538);
+  background: rgba(184, 101, 56, 0.04);
 }
 
 .tower-btn--danger {
-  background: rgba(243, 139, 139, 0.15);
-  border: 1px solid rgba(243, 139, 139, 0.4);
-  color: #f38b8b;
+  background: #ffebee;
+  border: 1px solid #ef9a9a;
+  color: #c62828;
+  box-shadow: none;
+}
+
+.tower-btn--danger:hover {
+  background: #ffcdd2;
 }
 
 .tower-input {
-  background: rgba(10, 10, 14, 0.85);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  color: #ffffff;
+  background: #ffffff;
+  border: 1.5px solid var(--color-border, #e6dcce);
+  color: var(--color-foreground, #1a1714);
   padding: 8px 14px;
   border-radius: 8px;
   font-size: 0.84rem;
   outline: none;
+  transition: border-color 0.2s ease;
 }
 
 .tower-input:focus {
-  border-color: #d19737;
+  border-color: var(--color-primary, #b86538);
 }
 
 @media (max-width: 900px) {

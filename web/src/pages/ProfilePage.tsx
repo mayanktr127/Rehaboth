@@ -80,29 +80,28 @@ export const ProfilePage: React.FC = () => {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
-              backgroundColor: '#1f1b17',
-              color: '#ffffff',
-              border: '1.5px solid #d68b61',
-              boxShadow: '0 4px 16px rgba(184, 101, 56, 0.15)',
+              backgroundColor: 'var(--bg-card)',
+              border: '1.5px solid var(--color-primary)',
+              boxShadow: 'var(--shadow-md)',
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
               <span style={{ fontSize: '24px' }}>🛡️</span>
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <span style={{ fontSize: '14.5px', fontWeight: 700, color: '#ffffff', display: 'block' }}>
+                  <span style={{ fontSize: '14.5px', fontWeight: 700, color: 'var(--color-foreground)', display: 'block' }}>
                     Operator Command Tower
                   </span>
-                  <span style={{ fontSize: '10px', fontWeight: 800, padding: '2px 6px', borderRadius: '4px', backgroundColor: '#d68b61', color: '#1f1b17', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                  <span style={{ fontSize: '10px', fontWeight: 800, padding: '2px 8px', borderRadius: 'var(--radius-pill)', backgroundColor: 'var(--color-primary)', color: '#ffffff', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                     Admin / Staff
                   </span>
                 </div>
-                <span style={{ fontSize: '12px', color: '#d68b61', fontWeight: 600 }}>
+                <span style={{ fontSize: '12px', color: 'var(--color-primary)', fontWeight: 600 }}>
                   Hub Intake • Custody Stepper • Tag Printing • Refund Ledger • Termbase
                 </span>
               </div>
             </div>
-            <span style={{ fontSize: '13px', fontWeight: 700, color: '#d68b61' }}>Open Tower →</span>
+            <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--color-primary)' }}>Open Tower →</span>
           </Link>
 
           {/* Active Valet Hub Location Card */}

@@ -165,7 +165,7 @@ export const OperatorDashboardPage: React.FC = () => {
             </div>
           </Link>
           <Link to="/" style={{ textDecoration: 'none', marginTop: 'auto' }}>
-            <div className="tower-nav__item" style={{ color: '#e8c36a' }}>
+            <div className="tower-nav__item" style={{ color: 'var(--color-primary, #b86538)', fontWeight: 700 }}>
               <span className="tower-nav-icon">⌂</span> Customer Website ↗
             </div>
           </Link>
@@ -177,7 +177,7 @@ export const OperatorDashboardPage: React.FC = () => {
         {/* Top Header Bar */}
         <div className="tower-top-header">
           <div>
-            <div style={{ fontSize: '0.72rem', color: '#e8c36a', letterSpacing: 2, fontWeight: 700 }}>
+            <div style={{ fontSize: '0.72rem', color: 'var(--color-primary, #b86538)', letterSpacing: 2, fontWeight: 700 }}>
               OPERATOR COMMAND • INDIRANAGAR ATELIER STUDIO
             </div>
             <h1 className="tower-header-title">
@@ -191,7 +191,7 @@ export const OperatorDashboardPage: React.FC = () => {
           </div>
 
           <div className="tower-header-meta">
-            <span style={{ color: '#8f8a82', fontSize: '0.8rem' }}>Active Role:</span>
+            <span style={{ color: 'var(--color-muted-foreground, #7d7265)', fontSize: '0.8rem', fontWeight: 600 }}>Active Role:</span>
             <select
               className="tower-role-select"
               value={role}
@@ -205,7 +205,7 @@ export const OperatorDashboardPage: React.FC = () => {
         </div>
 
         {statusNotice ? (
-          <div style={{ padding: '10px 16px', background: 'rgba(61,220,132,0.12)', color: '#3ddc84', borderRadius: 8, marginBottom: 20, fontSize: '0.85rem' }}>
+          <div style={{ padding: '10px 16px', background: '#e8f5e9', color: '#2e7d32', border: '1px solid #c8e6c9', borderRadius: 8, marginBottom: 20, fontSize: '0.85rem', fontWeight: 600 }}>
             ✓ {statusNotice}
           </div>
         ) : null}
@@ -222,7 +222,7 @@ export const OperatorDashboardPage: React.FC = () => {
           </div>
           <div className="tower-kpi-card">
             <span>AT RISK / DAMAGED HOLD</span>
-            <strong style={{ color: '#f38b8b' }}>01</strong>
+            <strong style={{ color: '#c62828' }}>01</strong>
           </div>
           <div className="tower-kpi-card">
             <span>CARE STUDIOS</span>
@@ -238,7 +238,7 @@ export const OperatorDashboardPage: React.FC = () => {
               <div className="tower-card-title">
                 <div>
                   <span>SELECTED SESSION: #{selectedOrder.orderNumber}</span>
-                  <span style={{ fontSize: '0.85rem', color: '#8f8a82', fontWeight: 400, marginLeft: 12 }}>
+                  <span style={{ fontSize: '0.85rem', color: 'var(--color-muted-foreground, #7d7265)', fontWeight: 400, marginLeft: 12 }}>
                     {selectedOrder.customerName} • {selectedOrder.garmentCount} Garments • Fragrance: {selectedOrder.fragrance}
                   </span>
                 </div>
@@ -255,7 +255,7 @@ export const OperatorDashboardPage: React.FC = () => {
               </div>
 
               {/* Custody Stage Stepper */}
-              <div style={{ fontSize: '0.75rem', color: '#e8c36a', letterSpacing: 1.5, fontWeight: 700, marginBottom: 10 }}>
+              <div style={{ fontSize: '0.75rem', color: 'var(--color-primary, #b86538)', letterSpacing: 1.5, fontWeight: 700, marginBottom: 10 }}>
                 CUSTODY PROGRESSION • STAGE {selectedOrder.stage + 1} OF {STAGES.length}
               </div>
 
@@ -276,9 +276,9 @@ export const OperatorDashboardPage: React.FC = () => {
 
               {/* Damaged Hold Banner */}
               {selectedOrder.holdDamagedItems ? (
-                <div style={{ marginTop: 24, padding: '14px 18px', background: 'rgba(232,160,154,0.1)', border: '1px solid rgba(232,160,154,0.4)', borderRadius: 10, color: '#e8a09a', fontSize: '0.85rem' }}>
-                  <strong>⚠️ HOLD DAMAGED ITEMS &amp; CONFIRM BEFORE PROCESSING: ENABLED</strong>
-                  <p style={{ margin: '4px 0 0', color: '#f7d3ce', fontSize: '0.82rem' }}>
+                <div style={{ marginTop: 24, padding: '14px 18px', background: '#fff3e0', border: '1.5px solid #ffb74d', borderRadius: 10, color: '#b76400', fontSize: '0.85rem' }}>
+                  <strong style={{ color: '#b76400' }}>⚠️ HOLD DAMAGED ITEMS &amp; CONFIRM BEFORE PROCESSING: ENABLED</strong>
+                  <p style={{ margin: '4px 0 0', color: '#6d4200', fontSize: '0.82rem' }}>
                     {selectedOrder.damageNote || 'Customer reported pre-existing garment wear. Care team must call the customer before steam press.'}
                   </p>
                 </div>
@@ -317,15 +317,15 @@ export const OperatorDashboardPage: React.FC = () => {
                       <tr
                         key={ord.id}
                         style={{
-                          background: isSelected ? 'rgba(209,151,55,0.08)' : undefined,
+                          background: isSelected ? 'rgba(184,101,56,0.06)' : undefined,
                           cursor: 'pointer',
                         }}
                         onClick={() => setSelectedOrderId(ord.orderNumber)}
                       >
-                        <td style={{ fontFamily: 'monospace', fontWeight: 700, color: '#e8c36a' }}>
+                        <td style={{ fontFamily: 'monospace', fontWeight: 700, color: 'var(--color-primary, #b86538)' }}>
                           #{ord.orderNumber}
                         </td>
-                        <td>{ord.customerName}</td>
+                        <td style={{ fontWeight: 600 }}>{ord.customerName}</td>
                         <td>{ord.garmentCount} items</td>
                         <td>{ord.fragrance}</td>
                         <td>
@@ -335,14 +335,14 @@ export const OperatorDashboardPage: React.FC = () => {
                           {ord.holdDamagedItems ? (
                             <span className="tower-badge tower-badge--red">HOLD ACTIVE</span>
                           ) : (
-                            <span style={{ color: '#8f8a82', fontSize: '0.75rem' }}>None</span>
+                            <span style={{ color: 'var(--color-muted-foreground, #7d7265)', fontSize: '0.75rem' }}>None</span>
                           )}
                         </td>
                         <td>
                           <button
                             type="button"
                             className="tower-btn tower-btn--outline"
-                            style={{ padding: '4px 10px', fontSize: '0.75rem' }}
+                            style={{ padding: '5px 12px', fontSize: '0.75rem' }}
                             onClick={(e) => {
                               e.stopPropagation();
                               setSelectedOrderId(ord.orderNumber);

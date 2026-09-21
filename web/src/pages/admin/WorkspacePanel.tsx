@@ -180,7 +180,7 @@ export const WorkspacePanel: React.FC<WorkspacePanelProps> = ({ activeTab, order
   return (
     <div>
       {message ? (
-        <div style={{ padding: '10px 16px', background: 'rgba(209,151,55,0.15)', color: '#e8c36a', borderRadius: 8, marginBottom: 16, fontSize: '0.85rem' }}>
+        <div style={{ padding: '10px 16px', background: '#fdf6ec', color: 'var(--color-primary, #b86538)', border: '1px solid #ebd0ba', borderRadius: 8, marginBottom: 16, fontSize: '0.85rem', fontWeight: 600 }}>
           ✓ {message}
         </div>
       ) : null}
@@ -271,13 +271,13 @@ export const WorkspacePanel: React.FC<WorkspacePanelProps> = ({ activeTab, order
               {isPrinting ? 'PRINTING TAGS...' : '🖨️ PRINT ALL PENDING TAGS'}
             </button>
           </div>
-          <p style={{ color: '#8f8a82', fontSize: '0.85rem', marginTop: -8 }}>
+          <p style={{ color: 'var(--color-muted-foreground, #7d7265)', fontSize: '0.85rem', marginTop: -8 }}>
             Tags auto-generate once an order is checked in at the hub. Attach unique barcode tags
             to garment hangers for RFID tracking.
           </p>
 
           <div style={{ display: 'flex', gap: 12, margin: '16px 0' }}>
-            <span style={{ color: '#e8c36a', fontSize: '0.85rem', alignSelf: 'center', fontWeight: 600 }}>
+            <span style={{ color: 'var(--color-primary, #b86538)', fontSize: '0.85rem', alignSelf: 'center', fontWeight: 700 }}>
               ACTIVE HUB SESSION:
             </span>
             <select
@@ -305,7 +305,7 @@ export const WorkspacePanel: React.FC<WorkspacePanelProps> = ({ activeTab, order
               {garmentTags.map((tag) => (
                 <tr key={tag.id}>
                   <td>Piece #{tag.tagNumber}</td>
-                  <td style={{ fontFamily: 'monospace', color: '#e8c36a' }}>{tag.tagCode}</td>
+                  <td style={{ fontFamily: 'monospace', color: 'var(--color-primary, #b86538)', fontWeight: 700 }}>{tag.tagCode}</td>
                   <td>Suits &amp; Blazers</td>
                   <td>
                     <span className={`tower-badge ${tag.status === 'printed' ? 'tower-badge--green' : 'tower-badge--gold'}`}>
@@ -354,15 +354,15 @@ export const WorkspacePanel: React.FC<WorkspacePanelProps> = ({ activeTab, order
 
           {walletAccount && (
             <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '16px', background: 'rgba(209,151,55,0.08)', borderRadius: 10, border: '1px solid rgba(209,151,55,0.25)', marginBottom: 20 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '18px 20px', background: 'var(--bg-secondary, #f2e8dc)', borderRadius: 12, border: '1px solid var(--color-border, #e6dcce)', marginBottom: 20 }}>
                 <div>
-                  <div style={{ color: '#8f8a82', fontSize: '0.75rem' }}>CUSTOMER ACCOUNT</div>
-                  <strong style={{ fontSize: '1.2rem', color: '#ffffff' }}>{walletAccount.customerName}</strong>
-                  <div style={{ color: '#8f8a82', fontSize: '0.8rem' }}>Phone: +91 {walletAccount.phone} • ID: {walletAccount.customerId}</div>
+                  <div style={{ color: 'var(--color-muted-foreground, #7d7265)', fontSize: '0.75rem', fontWeight: 700, letterSpacing: 0.5 }}>CUSTOMER ACCOUNT</div>
+                  <strong style={{ fontSize: '1.25rem', color: 'var(--color-foreground, #1a1714)', display: 'block', marginTop: 2 }}>{walletAccount.customerName}</strong>
+                  <div style={{ color: 'var(--color-muted-foreground, #7d7265)', fontSize: '0.82rem', marginTop: 2 }}>Phone: +91 {walletAccount.phone} • ID: {walletAccount.customerId}</div>
                 </div>
                 <div style={{ textAlign: 'right' }}>
-                  <div style={{ color: '#8f8a82', fontSize: '0.75rem' }}>CURRENT WALLET BALANCE</div>
-                  <strong style={{ fontSize: '1.6rem', color: '#e8c36a' }}>₹{walletAccount.balanceInr}</strong>
+                  <div style={{ color: 'var(--color-muted-foreground, #7d7265)', fontSize: '0.75rem', fontWeight: 700, letterSpacing: 0.5 }}>CURRENT WALLET BALANCE</div>
+                  <strong style={{ fontSize: '1.75rem', color: 'var(--color-primary, #b86538)', fontFamily: 'var(--font-serif, serif)' }}>₹{walletAccount.balanceInr}</strong>
                 </div>
               </div>
 
@@ -401,10 +401,10 @@ export const WorkspacePanel: React.FC<WorkspacePanelProps> = ({ activeTab, order
                 <tbody>
                   {walletAccount.ledger.map((entry) => (
                     <tr key={entry.id}>
-                      <td style={{ fontFamily: 'monospace' }}>#{entry.id}</td>
-                      <td style={{ color: '#3ddc84', fontWeight: 700 }}>+₹{entry.amountInr}</td>
+                      <td style={{ fontFamily: 'monospace', fontWeight: 600 }}>#{entry.id}</td>
+                      <td style={{ color: '#2e7d32', fontWeight: 700 }}>+₹{entry.amountInr}</td>
                       <td>{entry.reason}</td>
-                      <td style={{ color: '#8f8a82' }}>{entry.createdAt}</td>
+                      <td style={{ color: 'var(--color-muted-foreground, #7d7265)' }}>{entry.createdAt}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -427,7 +427,7 @@ export const WorkspacePanel: React.FC<WorkspacePanelProps> = ({ activeTab, order
               ⚠️ PURGE ALL REGIONS
             </button>
           </div>
-          <p style={{ color: '#f38b8b', fontSize: '0.8rem', background: 'rgba(243,139,139,0.08)', padding: '10px 14px', borderRadius: 8, border: '1px solid rgba(243,139,139,0.2)' }}>
+          <p style={{ color: '#c62828', fontSize: '0.82rem', background: '#ffebee', padding: '12px 16px', borderRadius: 8, border: '1px solid #ffcdd2', lineHeight: 1.5 }}>
             <strong>Risk Notice:</strong> Flushing in-memory caches forces downstream services to query the PostgreSQL primary database for store tariffs and active promotion cards. No customer PII is stored in cache.
           </p>
 
@@ -444,7 +444,7 @@ export const WorkspacePanel: React.FC<WorkspacePanelProps> = ({ activeTab, order
             <tbody>
               {cacheRegions.map((reg) => (
                 <tr key={reg.region}>
-                  <td style={{ fontFamily: 'monospace', color: '#e8c36a' }}>{reg.region}</td>
+                  <td style={{ fontFamily: 'monospace', color: 'var(--color-primary, #b86538)', fontWeight: 700 }}>{reg.region}</td>
                   <td>{reg.description}</td>
                   <td>{reg.entries} items</td>
                   <td>
@@ -476,21 +476,21 @@ export const WorkspacePanel: React.FC<WorkspacePanelProps> = ({ activeTab, order
           </div>
 
           {escalationSubmitted && (
-            <div style={{ padding: '12px 16px', background: 'rgba(61,220,132,0.12)', color: '#3ddc84', borderRadius: 8, marginBottom: 16 }}>
+            <div style={{ padding: '12px 16px', background: '#e8f5e9', color: '#2e7d32', border: '1px solid #c8e6c9', borderRadius: 8, marginBottom: 16, fontWeight: 600 }}>
               ✓ Escalation logged for order #{orderId}. Quality Control Supervisor notified.
             </div>
           )}
 
           <form onSubmit={handleEscalationSubmit}>
             <div style={{ marginBottom: 16 }}>
-              <label style={{ display: 'block', color: '#8f8a82', fontSize: '0.75rem', marginBottom: 6, fontWeight: 700 }}>
+              <label style={{ display: 'block', color: 'var(--color-muted-foreground, #7d7265)', fontSize: '0.75rem', marginBottom: 6, fontWeight: 700 }}>
                 TARGET ORDER IDENTIFIER
               </label>
               <input className="tower-input" value={orderId} disabled style={{ opacity: 0.8 }} />
             </div>
 
             <div style={{ marginBottom: 16 }}>
-              <label style={{ display: 'block', color: '#8f8a82', fontSize: '0.75rem', marginBottom: 6, fontWeight: 700 }}>
+              <label style={{ display: 'block', color: 'var(--color-muted-foreground, #7d7265)', fontSize: '0.75rem', marginBottom: 6, fontWeight: 700 }}>
                 REASON FOR OVERRIDE / EXCEPTION
               </label>
               <textarea

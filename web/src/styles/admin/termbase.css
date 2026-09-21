@@ -1,9 +1,10 @@
+/* Brand Termbase Styles - Styled with Rehaboth Steam Website Luxury Palette */
 .termbase-page {
   min-height: 100vh;
   padding: 48px clamp(20px, 5vw, 72px);
-  background: #0d0d0f;
-  color: #f7f4ef;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background-color: var(--bg-main, #faf6ef);
+  color: var(--color-foreground, #1a1714);
+  font-family: var(--font-sans, 'Plus Jakarta Sans', system-ui, sans-serif);
 }
 
 .termbase-header {
@@ -16,21 +17,22 @@
 }
 
 .termbase-kicker, .termbase-key, .locale-label {
-  color: #e8c36a;
+  color: var(--color-primary, #b86538);
   letter-spacing: .12em;
-  font-size: .72rem;
+  font-size: .74rem;
   font-weight: 800;
 }
 
 .termbase-header h1 {
   margin: 6px 0;
-  font-size: clamp(2rem, 4vw, 3rem);
-  font-weight: 600;
-  color: #ffffff;
+  font-family: var(--font-serif, 'Playfair Display', Georgia, serif);
+  font-size: clamp(2rem, 4vw, 2.75rem);
+  font-weight: 700;
+  color: var(--color-foreground, #1a1714);
 }
 
 .termbase-header p {
-  color: #9e988f;
+  color: var(--color-muted-foreground, #7d7265);
   margin: 0;
 }
 
@@ -38,17 +40,18 @@
   display: grid;
   gap: 8px;
   text-align: right;
-  color: #9e988f;
+  color: var(--color-muted-foreground, #7d7265);
   font-size: .75rem;
 }
 
 .termbase-toolbar, .termbase-add, .termbase-card {
   max-width: 1180px;
   margin: 0 auto 18px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
-  background: #141418;
-  padding: 20px;
+  border: 1px solid var(--color-border, #e6dcce);
+  border-radius: 14px;
+  background: var(--bg-card, #ffffff);
+  padding: 22px;
+  box-shadow: var(--shadow-sm, 0 2px 6px rgba(58, 49, 40, 0.04));
 }
 
 .termbase-toolbar {
@@ -70,40 +73,44 @@
 .termbase-add h2 {
   grid-column: 1 / -1;
   margin: 0 0 4px 0;
-  font-size: 1rem;
-  color: #ffffff;
+  font-family: var(--font-serif, 'Playfair Display', Georgia, serif);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--color-foreground, #1a1714);
 }
 
 .termbase-page input, .termbase-page select {
   min-height: 42px;
   width: 100%;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1.5px solid var(--color-border, #e6dcce);
   border-radius: 8px;
   padding: 0 12px;
-  background: rgba(10, 10, 14, 0.85);
-  color: inherit;
+  background: #ffffff;
+  color: var(--color-foreground, #1a1714);
   font: inherit;
   outline: none;
+  transition: border-color 0.2s ease;
 }
 
 .termbase-page input:focus, .termbase-page select:focus {
-  border-color: #d19737;
+  border-color: var(--color-primary, #b86538);
 }
 
 .termbase-page button {
   min-height: 42px;
   border: 0;
   border-radius: 8px;
-  padding: 0 16px;
-  background: #d19737;
-  color: #17130e;
-  font-weight: 800;
+  padding: 0 18px;
+  background: var(--color-primary, #b86538);
+  color: #ffffff;
+  font-weight: 700;
   cursor: pointer;
-  transition: opacity 0.15s ease;
+  transition: all 0.15s ease;
+  box-shadow: 0 2px 6px rgba(184, 101, 56, 0.2);
 }
 
 .termbase-page button:hover {
-  opacity: 0.9;
+  background: var(--color-primary-hover, #a2552c);
 }
 
 .termbase-page button:disabled {
@@ -119,19 +126,20 @@
 }
 
 .termbase-card-heading p {
-  color: #9e988f;
-  font-size: .78rem;
+  color: var(--color-muted-foreground, #7d7265);
+  font-size: .8rem;
   margin: 8px 0 0;
 }
 
 .danger-button {
-  background: transparent !important;
-  color: #f38b8b !important;
-  border: 1px solid rgba(243, 139, 139, 0.35) !important;
+  background: #ffebee !important;
+  color: #c62828 !important;
+  border: 1px solid #ef9a9a !important;
+  box-shadow: none !important;
 }
 
 .danger-button:hover {
-  background: rgba(243, 139, 139, 0.1) !important;
+  background: #ffcdd2 !important;
 }
 
 .termbase-source-form, .termbase-translation {
@@ -145,16 +153,16 @@
 .termbase-source-form label {
   display: grid;
   gap: 6px;
-  color: #9e988f;
-  font-size: .68rem;
-  font-weight: 800;
+  color: var(--color-muted-foreground, #7d7265);
+  font-size: .7rem;
+  font-weight: 700;
   letter-spacing: .08em;
 }
 
 .termbase-translations {
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-top: 1px solid var(--color-border, #e6dcce);
   margin-top: 18px;
-  padding-top: 8px;
+  padding-top: 12px;
 }
 
 .termbase-translation {
@@ -167,14 +175,14 @@
 }
 
 .termbase-error {
-  color: #f38b8b;
+  color: #c62828;
   font-size: .82rem;
 }
 
 .termbase-empty {
   max-width: 1180px;
   margin: 28px auto;
-  color: #9e988f;
+  color: var(--color-muted-foreground, #7d7265);
   text-align: center;
   padding: 40px;
 }
