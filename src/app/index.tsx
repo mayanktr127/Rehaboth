@@ -4,10 +4,12 @@ import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../components/ThemeContext';
 import { DemoData } from '../constants/theme';
+import { useTranslation } from '../i18n';
 
 export default function SplashScreen() {
   const router = useRouter();
   const { colors } = useTheme();
+  const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const safeTop = Math.max(insets.top, Platform.OS === 'android' ? 36 : 16);
 
@@ -32,7 +34,7 @@ export default function SplashScreen() {
         {/* Main Headline matching Image 1 ("Welcome to Rehaboth") */}
         <View style={styles.headlineContainer}>
           <Text style={[styles.mainHeadline, { color: colors.foreground }]}>
-            Welcome{'\n'}to Rehaboth
+            {t('welcome_title', 'Welcome to Rehaboth')}
           </Text>
         </View>
 

@@ -15,6 +15,7 @@ import {
   Manrope_700Bold,
 } from "@expo-google-fonts/manrope";
 import { ThemeProvider } from "../components/ThemeContext";
+import { I18nProvider } from "../i18n";
 import { ResponsiveContainer } from "../components/ResponsiveContainer";
 import { View, StyleSheet, Platform, StatusBar as RNStatusBar } from "react-native";
 import { StatusBar } from "expo-status-bar";
@@ -47,34 +48,39 @@ export default function RootLayout() {
   return (
     <SafeAreaProvider>
       <ThemeProvider>
-        <View style={styles.container}>
-          <StatusBar style="dark" />
-          <ResponsiveContainer>
-            <Stack
-              screenOptions={{
-                headerShown: false,
-                animation: 'slide_from_bottom',
-                animationDuration: 420,
-              }}
-            >
-              <Stack.Screen name="index" />
-              <Stack.Screen name="register" />
-              <Stack.Screen name="dashboard" />
-              <Stack.Screen name="schedule-pickup" />
-              <Stack.Screen name="smart-bag-details" />
-              <Stack.Screen name="order-status" />
-              <Stack.Screen name="profile" />
-              <Stack.Screen name="secure-handover" />
-              <Stack.Screen name="select-location" />
-              <Stack.Screen name="concierge-bot" />
-              <Stack.Screen name="help-center" />
-            </Stack>
-
-
-
-          </ResponsiveContainer>
-
-        </View>
+        <I18nProvider>
+          <View style={styles.container}>
+            <StatusBar style="dark" />
+            <ResponsiveContainer>
+              <Stack
+                screenOptions={{
+                  headerShown: false,
+                  animation: 'slide_from_bottom',
+                  animationDuration: 420,
+                }}
+              >
+                <Stack.Screen name="index" />
+                <Stack.Screen name="register" />
+                <Stack.Screen name="dashboard" />
+                <Stack.Screen name="schedule-pickup" />
+                <Stack.Screen name="smart-bag-details" />
+                <Stack.Screen name="order-status" />
+                <Stack.Screen name="profile" />
+                <Stack.Screen name="secure-handover" />
+                <Stack.Screen name="select-location" />
+                <Stack.Screen name="concierge-bot" />
+                <Stack.Screen name="help-center" />
+                <Stack.Screen name="scent-selection" />
+                <Stack.Screen name="payment" />
+                <Stack.Screen name="order-history" />
+                <Stack.Screen name="cancel-order" />
+                <Stack.Screen name="rate-delivery" />
+                <Stack.Screen name="free-bag-tracking" />
+                <Stack.Screen name="notifications" />
+              </Stack>
+            </ResponsiveContainer>
+          </View>
+        </I18nProvider>
       </ThemeProvider>
     </SafeAreaProvider>
   );

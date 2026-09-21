@@ -51,4 +51,32 @@ export const tokenStorage = {
       console.warn('Failed to remove auth token:', e);
     }
   },
+
+  async setLocale(locale: string): Promise<void> {
+    try {
+      if (Platform.OS === 'web') {
+        if (typeof window !== 'undefined') {
+          window.localStorage.setItem('rehaboth_user_locale', locale);
+        }
+      } else {
+        await SecureStore.setItemAsync('rehaboth_user_locale', locale);
+      }
+    } catch (e) {
+      console.warn('Failed to store locale:', e);
+    }
+  },
+
+  async getLocale(): Promise<string | null> {
+    try {
+      if (Platform.OS === 'web') {
+        if (typeof window !== 'undefined') {
+          return window.localStorage.getItem('rehaboth_user_locale');
+        }
+        return null;
+      }
+      return await SecureStore.getItemAsync('rehaboth_user_locale');
+    } catch (e) {
+      return null;
+    }
+  },
 };

@@ -16,19 +16,18 @@ import { DemoData, Fonts } from '../constants/theme';
 import { TopHeaderNav } from '../components/TopHeaderNav';
 import { apiService } from '../services/api';
 import { validateIndianMobile } from '../domain';
+import { useTranslation } from '../i18n';
 
 export default function RegisterScreen() {
   const router = useRouter();
   const { colors } = useTheme();
+  const { locale, setLocale, availableLocales, t } = useTranslation();
 
-  const [selectedLang, setSelectedLang] = useState('English');
   const [fullName, setFullName] = useState(DemoData.user.fullName);
   const [mobileNumber, setMobileNumber] = useState(DemoData.user.phoneNumber);
   const [email, setEmail] = useState(DemoData.user.email);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  const languages = ['English', 'हिन्दी', 'தமிழ்', 'తెలుగు'];
 
   const handleSubmit = async () => {
     const val = validateIndianMobile(mobileNumber);
@@ -44,9 +43,12 @@ export default function RegisterScreen() {
         fullName,
         email,
       });
-      router.push('/verification');
+      router.push({
+        pathname: '/verification',
+        params: { phone: val.cleanedValue },
+      });
     } catch (err: any) {
-      setError(err.message || 'Failed to dispatch verification code.');
+      setError(err.message || 'Unable to request OTP. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -61,25 +63,25 @@ export default function RegisterScreen() {
         {/* Header matching editorial voice */}
         <View style={styles.headerSection}>
           <Text style={[styles.title, { color: colors.foreground, fontFamily: Fonts.display }]}>
-            Welcome to Rehaboth
+            {t('welcome_title', 'Welcome to Rehaboth')}
           </Text>
           <Text style={[styles.subtitle, { color: colors.mutedForeground }]}>
-            Garment Care, Elevated
+            {t('welcome_subtitle', 'Garment Care, Elevated')}
           </Text>
         </View>
 
-        {/* Language Selector */}
+        {/* Language Selector Chips */}
         <View style={styles.langSection}>
           <Text style={[styles.langPrompt, { color: colors.mutedForeground }]}>
             Choose your language
           </Text>
           <View style={styles.langChipsRow}>
-            {languages.map((lang) => {
-              const isSelected = selectedLang === lang;
+            {availableLocales.map((lang) => {
+              const isSelected = locale === lang.code;
               return (
                 <Pressable
-                  key={lang}
-                  onPress={() => setSelectedLang(lang)}
+                  key={lang.code}
+                  onPress={() => setLocale(lang.code)}
                   style={[
                     styles.langChip,
                     {
@@ -97,7 +99,7 @@ export default function RegisterScreen() {
                       },
                     ]}
                   >
-                    {lang}
+                    {lang.nativeLabel}
                   </Text>
                 </Pressable>
               );
@@ -107,18 +109,22 @@ export default function RegisterScreen() {
 
         {/* Form Inputs (Soft White Cards with Hairline Borders) */}
         <View style={styles.formSection}>
-          <Text style={[styles.fieldLabel, { color: colors.mutedForeground }]}>FULL NAME</Text>
+          <Text style={[styles.fieldLabel, { color: colors.mutedForeground }]}>
+            {t('full_name_label', 'FULL NAME')}
+          </Text>
           <View style={[styles.inputBox, { backgroundColor: colors.cardBg, borderColor: colors.border }]}>
             <TextInput
               style={[styles.textInput, { color: colors.foreground }]}
               value={fullName}
               onChangeText={setFullName}
-              placeholder="Enter full name"
+              placeholder={t('full_name_placeholder', 'e.g. Devendra Sharma')}
               placeholderTextColor={colors.mutedForeground}
             />
           </View>
 
-          <Text style={[styles.fieldLabel, { color: colors.mutedForeground }]}>MOBILE NUMBER</Text>
+          <Text style={[styles.fieldLabel, { color: colors.mutedForeground }]}>
+            {t('mobile_number_label', 'MOBILE NUMBER')}
+          </Text>
           <View style={[styles.inputBox, styles.phoneInputBox, { backgroundColor: colors.cardBg, borderColor: colors.border }]}>
             <Text style={[styles.countryPrefix, { color: colors.foreground }]}>IN +91</Text>
             <TextInput
@@ -126,13 +132,13 @@ export default function RegisterScreen() {
               value={mobileNumber}
               onChangeText={setMobileNumber}
               keyboardType="phone-pad"
-              placeholder="Enter mobile number"
+              placeholder={t('mobile_number_placeholder', '98765 43210')}
               placeholderTextColor={colors.mutedForeground}
             />
           </View>
 
           <Text style={[styles.fieldLabel, { color: colors.mutedForeground }]}>
-            EMAIL ADDRESS (OPTIONAL)
+            {t('email_label', 'EMAIL ADDRESS (OPTIONAL)')}
           </Text>
           <View style={[styles.inputBox, { backgroundColor: colors.cardBg, borderColor: colors.border }]}>
             <TextInput
@@ -140,13 +146,13 @@ export default function RegisterScreen() {
               value={email}
               onChangeText={setEmail}
               keyboardType="email-address"
-              placeholder="Enter email address"
+              placeholder={t('email_placeholder', 'e.g. devendra@gmail.com')}
               placeholderTextColor={colors.mutedForeground}
             />
           </View>
 
           {error ? (
-            <Text style={{ color: '#D9534F', fontSize: 13, marginTop: 8, textAlign: 'center' }}>
+            <Text style={{ color: colors.destructive, fontSize: 13, marginTop: 8, textAlign: 'center' }}>
               {error}
             </Text>
           ) : null}
@@ -158,7 +164,7 @@ export default function RegisterScreen() {
             </View>
           ) : (
             <GoldButton
-              title="SEND VERIFICATION OTP"
+              title={t('send_otp_btn', 'SEND VERIFICATION OTP')}
               onPress={handleSubmit}
               style={styles.submitBtn}
               showArrow={true}
@@ -170,13 +176,13 @@ export default function RegisterScreen() {
         <View style={styles.footerSection}>
           <Pressable onPress={() => router.push('/verification')}>
             <Text style={[styles.loginText, { color: colors.mutedForeground }]}>
-              Already have an account?{' '}
-              <Text style={{ color: colors.primary, fontWeight: '600' }}>Log In</Text>
+              {t('already_have_account', 'Already have an account?')}{' '}
+              <Text style={{ color: colors.primary, fontWeight: '600' }}>{t('log_in', 'Log In')}</Text>
             </Text>
           </Pressable>
 
           <Text style={[styles.disclaimer, { color: colors.mutedForeground }]}>
-            By continuing, you agree to Rehaboth Steam's Terms of Service and Privacy Policy
+            {t('terms_notice', "By continuing, you agree to Rehaboth Steam's Terms of Service and Privacy Policy")}
           </Text>
         </View>
       </ScrollView>

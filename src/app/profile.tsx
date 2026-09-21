@@ -19,13 +19,12 @@ import { TopHeaderNav } from '../components/TopHeaderNav';
 import { FloatingDockNav } from '../components/FloatingDockNav';
 import { ChatBubbleIcon } from '../components/ServiceIcons';
 import { FluidPage } from '../components/FluidMotion';
+import { useTranslation } from '../i18n';
 
 export default function ProfileScreen() {
   const router = useRouter();
   const { mode, toggleTheme, colors } = useTheme();
-
-  const [selectedLang, setSelectedLang] = useState('English');
-  const languages = ['English', 'हिन्दी', 'தமிழ்', 'తెలుగు'];
+  const { locale, setLocale, availableLocales, t } = useTranslation();
 
   const handleLogout = () => {
     if (Platform.OS === 'web') {
@@ -139,12 +138,12 @@ export default function ProfileScreen() {
               LANGUAGE
             </Text>
             <View style={styles.langChipsRow}>
-              {languages.map((lang) => {
-                const isSelected = selectedLang === lang;
+              {availableLocales.map((lang) => {
+                const isSelected = locale === lang.code;
                 return (
                   <Pressable
-                    key={lang}
-                    onPress={() => setSelectedLang(lang)}
+                    key={lang.code}
+                    onPress={() => setLocale(lang.code)}
                     style={({ pressed }) => [
                       styles.langChip,
                       {
@@ -163,7 +162,7 @@ export default function ProfileScreen() {
                         },
                       ]}
                     >
-                      {lang}
+                      {lang.nativeLabel}
                     </Text>
                   </Pressable>
                 );
