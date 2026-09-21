@@ -8,8 +8,11 @@ import {
   ScrollView,
   Alert,
   Platform,
+  TextInput,
+  Image,
 } from 'react-native';
 import { useRouter } from 'expo-router';
+import * as ImagePicker from 'expo-image-picker';
 import { useTheme } from '../components/ThemeContext';
 import { GoldButton } from '../components/GoldButton';
 import { TopHeaderNav } from '../components/TopHeaderNav';
@@ -24,7 +27,12 @@ export default function SchedulePickupScreen() {
 
   const [selectedDate, setSelectedDate] = useState('Today 24');
   const [selectedTime, setSelectedTime] = useState('slot-1');
-  const [garmentsCount, setGarmentsCount] = useState(25);
+  const [garmentsCount, setGarmentsCount] = useState(4);
+
+  // Damaged items intake
+  const [hasDamage, setHasDamage] = useState(false);
+  const [damageNotes, setDamageNotes] = useState('');
+  const [damagePhotos, setDamagePhotos] = useState<string[]>([]);
 
   const dates = [
     { day: 'Today', date: '24' },
@@ -39,16 +47,49 @@ export default function SchedulePickupScreen() {
     { id: 'slot-3', label: '06:00 PM - 09:00 PM (Evening Valet)' },
   ];
 
-  const handleConfirm = () => {
-    if (Platform.OS === 'web') {
-      router.push('/order-status');
-    } else {
-      Alert.alert(
-        'Pickup Scheduled! 📦✨',
-        `Your Valet will arrive on ${selectedDate} during your selected window to collect ${garmentsCount} garments.`,
-        [{ text: 'View Order Status', onPress: () => router.push('/order-status') }]
-      );
+  const handlePickPhoto = async () => {
+    if (damagePhotos.length >= 3) {
+      Alert.alert('Limit Reached', 'You can upload up to 3 photos of garment imperfections.');
+      return;
     }
+
+    try {
+      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert('Permission Denied', 'Permission to access your photo library is required to attach intake photos.');
+        return;
+      }
+
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ['images'],
+        allowsEditing: true,
+        quality: 0.7,
+      });
+
+      if (!result.canceled && result.assets && result.assets[0]?.uri) {
+        setDamagePhotos(prev => [...prev, result.assets[0].uri]);
+      }
+    } catch (err) {
+      Alert.alert('Photo Selection Error', 'Unable to pick photo.');
+    }
+  };
+
+  const handleRemovePhoto = (index: number) => {
+    setDamagePhotos(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const handleConfirm = () => {
+    router.push({
+      pathname: '/scent-selection' as any,
+      params: {
+        pickupDate: selectedDate,
+        timeSlot: selectedTime,
+        garmentCount: garmentsCount.toString(),
+        hasDamage: hasDamage ? 'true' : 'false',
+        damageNotes: damageNotes,
+        damagePhotos: JSON.stringify(damagePhotos),
+      },
+    });
   };
 
   return (
@@ -218,9 +259,96 @@ export default function SchedulePickupScreen() {
             </View>
           </View>
 
-          {/* Confirm Button */}
+          {/* Garment Condition & Intake */}
+          <View style={styles.sectionMargin}>
+            <Text style={[styles.sectionTitle, { color: colors.mutedForeground }]}>
+              GARMENT CONDITION & FABRIC INTAKE
+            </Text>
+            <View style={[styles.damageCard, { backgroundColor: colors.cardBg, borderColor: colors.border }]}>
+              <Pressable
+                onPress={() => setHasDamage(!hasDamage)}
+                style={styles.checkboxRow}
+              >
+                <View
+                  style={[
+                    styles.checkboxBox,
+                    {
+                      borderColor: hasDamage ? colors.primary : colors.border,
+                      backgroundColor: hasDamage ? colors.primary : 'transparent',
+                    },
+                  ]}
+                >
+                  {hasDamage && <Text style={styles.checkMark}>✓</Text>}
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={[styles.checkboxLabel, { color: colors.foreground }]}>
+                    Report Pre-existing Snags or Delicate Blemishes
+                  </Text>
+                  <Text style={[styles.checkboxSub, { color: colors.mutedForeground }]}>
+                    Catalog fragile vintage silks, pulls, or loose lapel stitching
+                  </Text>
+                </View>
+              </Pressable>
+
+              {hasDamage && (
+                <View style={styles.damageDetailsContainer}>
+                  <TextInput
+                    style={[
+                      styles.damageInput,
+                      {
+                        backgroundColor: colors.inputBg || colors.background,
+                        borderColor: colors.border,
+                        color: colors.foreground,
+                      },
+                    ]}
+                    placeholder="Describe specific garment areas (e.g. slight fray on collar)..."
+                    placeholderTextColor={colors.mutedForeground}
+                    multiline
+                    numberOfLines={3}
+                    value={damageNotes}
+                    onChangeText={setDamageNotes}
+                  />
+
+                  {/* Photo attachments */}
+                  <View style={styles.photoSection}>
+                    <View style={styles.photoHeaderRow}>
+                      <Text style={[styles.photoLabel, { color: colors.mutedForeground }]}>
+                        INTAKE PHOTOS ({damagePhotos.length}/3)
+                      </Text>
+                      {damagePhotos.length < 3 && (
+                        <Pressable
+                          onPress={handlePickPhoto}
+                          style={[styles.addPhotoBtn, { borderColor: colors.primary }]}
+                        >
+                          <Text style={[styles.addPhotoText, { color: colors.primary }]}>+ Add Photo</Text>
+                        </Pressable>
+                      )}
+                    </View>
+
+                    {damagePhotos.length > 0 && (
+                      <View style={styles.photosThumbRow}>
+                        {damagePhotos.map((uri, idx) => (
+                          <View key={idx} style={styles.thumbWrapper}>
+                            <Image source={{ uri }} style={styles.thumbImage} />
+                            <Pressable
+                              onPress={() => handleRemovePhoto(idx)}
+                              style={styles.thumbRemoveBtn}
+                            >
+                              <Text style={styles.thumbRemoveText}>×</Text>
+                            </Pressable>
+                          </View>
+                        ))}
+                      </View>
+                    )}
+                  </View>
+                </View>
+              )}
+            </View>
+          </View>
+
+          {/* Confirm / Continue Button */}
           <View style={styles.actionSection}>
-            <GoldButton title="CONFIRM PICKUP" onPress={handleConfirm} showArrow={true} />
+            <GoldButton title="PROCEED TO SCENT SELECTION" onPress={handleConfirm} showArrow={true} />
           </View>
         </ScrollView>
       </FluidPage>
@@ -403,5 +531,106 @@ const styles = StyleSheet.create({
   },
   actionSection: {
     marginTop: 28,
+  },
+  damageCard: {
+    borderRadius: 20,
+    borderWidth: 1,
+    padding: 16,
+    shadowColor: '#3a3128',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.03,
+    shadowRadius: 6,
+    elevation: 1,
+  },
+  checkboxRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  checkboxBox: {
+    width: 24,
+    height: 24,
+    borderRadius: 6,
+    borderWidth: 1.5,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  checkboxLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  checkboxSub: {
+    fontSize: 12,
+    marginTop: 2,
+  },
+  damageDetailsContainer: {
+    marginTop: 16,
+    paddingTop: 16,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: '#ece3d6',
+  },
+  damageInput: {
+    borderRadius: 12,
+    borderWidth: 1,
+    padding: 12,
+    fontSize: 13,
+    textAlignVertical: 'top',
+    minHeight: 70,
+  },
+  photoSection: {
+    marginTop: 14,
+  },
+  photoHeaderRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  photoLabel: {
+    fontSize: 11,
+    fontWeight: '700',
+    letterSpacing: 1,
+  },
+  addPhotoBtn: {
+    borderWidth: 1,
+    borderRadius: 999,
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+  },
+  addPhotoText: {
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  photosThumbRow: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  thumbWrapper: {
+    width: 64,
+    height: 64,
+    borderRadius: 12,
+    overflow: 'hidden',
+    position: 'relative',
+  },
+  thumbImage: {
+    width: '100%',
+    height: '100%',
+  },
+  thumbRemoveBtn: {
+    position: 'absolute',
+    top: 2,
+    right: 2,
+    backgroundColor: 'rgba(58, 49, 40, 0.75)',
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  thumbRemoveText: {
+    color: '#fff',
+    fontSize: 14,
+    lineHeight: 16,
+    fontWeight: 'bold',
   },
 });

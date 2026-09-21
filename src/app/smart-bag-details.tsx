@@ -119,6 +119,19 @@ export default function SmartBagDetailsScreen() {
             <Text style={[styles.priceFigure, { color: colors.primary, fontFamily: Fonts.display }]}>
               ₹999
             </Text>
+
+            <Pressable
+              onPress={() => router.push('/free-bag-tracking' as any)}
+              style={({ pressed }) => [
+                styles.trackingCallout,
+                { backgroundColor: colors.secondary, borderColor: colors.border },
+                pressed && { opacity: 0.8 },
+              ]}
+            >
+              <Text style={[styles.trackingCalloutText, { color: colors.foreground }]}>
+                Tracking a complimentary welcome bag? Tap here →
+              </Text>
+            </Pressable>
           </View>
 
           {/* Service Standards List matching Screenshot 3 */}
@@ -363,5 +376,17 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '600',
     letterSpacing: 1.5,
+  },
+  trackingCallout: {
+    marginTop: 14,
+    borderRadius: 14,
+    borderWidth: 1,
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    alignItems: 'center',
+  },
+  trackingCalloutText: {
+    fontSize: 12,
+    fontWeight: '600',
   },
 });

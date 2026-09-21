@@ -176,9 +176,9 @@ export const BottomTabBar: React.FC = () => {
     },
     {
       id: 'vault',
-      label: 'Vault',
+      label: 'Orders',
       renderIcon: (color: string) => <VaultTabIcon color={color} />,
-      route: '/order-status',
+      route: '/order-history',
     },
     {
       id: 'profile',
@@ -192,7 +192,7 @@ export const BottomTabBar: React.FC = () => {
     <View style={[styles.safeContainer, { bottom: safeBottom }]} pointerEvents="box-none">
       <View style={styles.tabBarContainer}>
         {tabs.map((tab) => {
-          const isActive = pathname === tab.route || (tab.id === 'vault' && pathname === '/order-status');
+          const isActive = pathname === tab.route || (tab.id === 'vault' && (pathname.startsWith('/order') || pathname === '/cancel-order' || pathname === '/rate-delivery'));
           const activeColor = '#ffffff';
           const inactiveColor = 'rgba(255, 245, 235, 0.72)';
           const currentColor = isActive ? activeColor : inactiveColor;

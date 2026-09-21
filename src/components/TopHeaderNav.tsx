@@ -1,26 +1,32 @@
 import React from 'react';
-import { View, Text, Pressable, StyleSheet, Image, Platform } from 'react-native';
+import { View, Text, Pressable, StyleSheet, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from './ThemeContext';
-import { DemoData } from '../constants/theme';
+import { useNotifications } from '../services/hooks';
 
 interface TopHeaderNavProps {
   showBack?: boolean;
   onBackPress?: () => void;
+  showNotifications?: boolean;
   showRightIcons?: boolean;
 }
 
 export const TopHeaderNav: React.FC<TopHeaderNavProps> = ({
   showBack = false,
   onBackPress,
+  showNotifications = true,
+  showRightIcons = true,
 }) => {
   const router = useRouter();
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
+  const { unreadCount } = useNotifications();
 
   // Dynamic safe area calculation for punch-hole cameras, notches, and status bars
   const safeTopPadding = Math.max(insets.top, Platform.OS === 'android' ? 36 : 10);
+
+  const shouldShowNotifications = showRightIcons && showNotifications;
 
   const handleLeftAction = () => {
     if (onBackPress) {
@@ -30,24 +36,50 @@ export const TopHeaderNav: React.FC<TopHeaderNavProps> = ({
     }
   };
 
-  if (!showBack) {
-    return <View style={[styles.topNavSpacer, { paddingTop: safeTopPadding }]} />;
-  }
-
   return (
     <View style={[styles.topNav, { paddingTop: safeTopPadding }]}>
-      {/* Left Back Chevron */}
-      <Pressable
-        onPress={handleLeftAction}
-        style={[styles.roundBtn, { backgroundColor: colors.cardBg, borderColor: colors.border }]}
-      >
-        <Text style={[styles.navBtnIcon, { color: colors.foreground }]}>‹</Text>
-      </Pressable>
-      <View style={styles.emptySpacer} />
+      {/* Left Back Chevron or Spacer */}
+      {showBack ? (
+        <Pressable
+          onPress={handleLeftAction}
+          style={({ pressed }) => [
+            styles.roundBtn,
+            { backgroundColor: colors.cardBg, borderColor: colors.border },
+            pressed && { opacity: 0.8 },
+          ]}
+        >
+          <Text style={[styles.navBtnIcon, { color: colors.foreground }]}>‹</Text>
+        </Pressable>
+      ) : (
+        <View style={styles.emptySpacer} />
+      )}
+
+      {/* Right Action Icons */}
+      <View style={styles.rightGroup}>
+        {shouldShowNotifications && (
+          <Pressable
+            onPress={() => router.push('/notifications' as any)}
+            style={({ pressed }) => [
+              styles.roundBtn,
+              styles.bellBtn,
+              { backgroundColor: colors.cardBg, borderColor: colors.border },
+              pressed && { opacity: 0.8 },
+            ]}
+          >
+            <Text style={styles.bellIcon}>🔔</Text>
+            {unreadCount > 0 && (
+              <View style={[styles.unreadBadge, { backgroundColor: colors.primary }]}>
+                <Text style={styles.unreadCountText}>
+                  {unreadCount > 9 ? '9+' : unreadCount}
+                </Text>
+              </View>
+            )}
+          </Pressable>
+        )}
+      </View>
     </View>
   );
 };
-
 
 const styles = StyleSheet.create({
   topNav: {
@@ -55,9 +87,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 0,
-    paddingBottom: 8,
-  },
-  topNavSpacer: {
     paddingBottom: 8,
   },
   emptySpacer: {
@@ -94,29 +123,20 @@ const styles = StyleSheet.create({
   bellIcon: {
     fontSize: 18,
   },
-  redDot: {
+  unreadBadge: {
     position: 'absolute',
-    top: 9,
-    right: 10,
-    width: 7,
-    height: 7,
-    borderRadius: 3.5,
+    top: -2,
+    right: -2,
+    minWidth: 18,
+    height: 18,
+    borderRadius: 9,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 3,
   },
-  avatarChip: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    borderWidth: 1,
-    overflow: 'hidden',
-    shadowColor: '#3a3128',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 6,
-    elevation: 2,
-  },
-  avatarImage: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
+  unreadCountText: {
+    color: '#fffaf4',
+    fontSize: 10,
+    fontWeight: '700',
   },
 });

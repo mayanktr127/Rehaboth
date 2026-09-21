@@ -29,6 +29,15 @@ export function useNotifications() {
     );
   };
 
+  const markAllAsRead = async () => {
+    for (const n of notifications) {
+      if (!n.read) {
+        await apiService.markNotificationAsRead(n.id);
+      }
+    }
+    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+  };
+
   const unreadCount = notifications.filter((n) => !n.read).length;
 
   return {
@@ -36,6 +45,7 @@ export function useNotifications() {
     unreadCount,
     loading,
     markAsRead,
+    markAllAsRead,
     refresh: fetchNotifs,
   };
 }
