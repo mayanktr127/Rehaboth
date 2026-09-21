@@ -1,11 +1,49 @@
+import { useEffect } from "react";
 import { Stack } from "expo-router";
+import * as SplashScreen from "expo-splash-screen";
+import {
+  useFonts,
+  Fraunces_400Regular,
+  Fraunces_500Medium,
+  Fraunces_600SemiBold,
+  Fraunces_700Bold,
+} from "@expo-google-fonts/fraunces";
+import {
+  Manrope_400Regular,
+  Manrope_500Medium,
+  Manrope_600SemiBold,
+  Manrope_700Bold,
+} from "@expo-google-fonts/manrope";
 import { ThemeProvider } from "../components/ThemeContext";
 import { ResponsiveContainer } from "../components/ResponsiveContainer";
 import { View, StyleSheet, Platform, StatusBar as RNStatusBar } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
+SplashScreen.preventAutoHideAsync().catch(() => {});
+
 export default function RootLayout() {
+  const [fontsLoaded, fontError] = useFonts({
+    Fraunces_400Regular,
+    Fraunces_500Medium,
+    Fraunces_600SemiBold,
+    Fraunces_700Bold,
+    Manrope_400Regular,
+    Manrope_500Medium,
+    Manrope_600SemiBold,
+    Manrope_700Bold,
+  });
+
+  useEffect(() => {
+    if (fontsLoaded || fontError) {
+      SplashScreen.hideAsync().catch(() => {});
+    }
+  }, [fontsLoaded, fontError]);
+
+  if (!fontsLoaded && !fontError) {
+    return null;
+  }
+
   return (
     <SafeAreaProvider>
       <ThemeProvider>

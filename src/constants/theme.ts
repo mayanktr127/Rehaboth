@@ -77,14 +77,46 @@ export const Colors = {
 
 export const Fonts = {
   display: Platform.select({
-    ios: 'Georgia',
-    android: 'serif',
-    default: 'Georgia, serif',
+    web: 'Fraunces_400Regular, Fraunces, Georgia, serif',
+    ios: 'Fraunces_400Regular',
+    android: 'Fraunces_400Regular',
+    default: 'Fraunces_400Regular, Georgia, serif',
+  }),
+  displayMedium: Platform.select({
+    web: 'Fraunces_500Medium, Fraunces, Georgia, serif',
+    ios: 'Fraunces_500Medium',
+    android: 'Fraunces_500Medium',
+    default: 'Fraunces_500Medium, Georgia, serif',
+  }),
+  displayBold: Platform.select({
+    web: 'Fraunces_700Bold, Fraunces, Georgia, serif',
+    ios: 'Fraunces_700Bold',
+    android: 'Fraunces_700Bold',
+    default: 'Fraunces_700Bold, Georgia, serif',
   }),
   body: Platform.select({
-    ios: 'System',
-    android: 'sans-serif',
-    default: 'sans-serif',
+    web: 'Manrope_400Regular, Manrope, -apple-system, sans-serif',
+    ios: 'Manrope_400Regular',
+    android: 'Manrope_400Regular',
+    default: 'Manrope_400Regular, sans-serif',
+  }),
+  bodyMedium: Platform.select({
+    web: 'Manrope_500Medium, Manrope, -apple-system, sans-serif',
+    ios: 'Manrope_500Medium',
+    android: 'Manrope_500Medium',
+    default: 'Manrope_500Medium, sans-serif',
+  }),
+  bodySemiBold: Platform.select({
+    web: 'Manrope_600SemiBold, Manrope, -apple-system, sans-serif',
+    ios: 'Manrope_600SemiBold',
+    android: 'Manrope_600SemiBold',
+    default: 'Manrope_600SemiBold, sans-serif',
+  }),
+  bodyBold: Platform.select({
+    web: 'Manrope_700Bold, Manrope, -apple-system, sans-serif',
+    ios: 'Manrope_700Bold',
+    android: 'Manrope_700Bold',
+    default: 'Manrope_700Bold, sans-serif',
   }),
 };
 

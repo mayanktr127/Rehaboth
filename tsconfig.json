@@ -16,5 +16,12 @@
     "**/*.tsx",
     ".expo/types/**/*.ts",
     "expo-env.d.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "web",
+    "_reference",
+    "Rehaboth-full-codebase-no-kotlin-6ebde9a",
+    "dist"
   ]
 }

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -6,10 +6,12 @@ import {
   Pressable,
   SafeAreaView,
   ScrollView,
+  ActivityIndicator,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTheme } from '../components/ThemeContext';
 import { GoldButton } from '../components/GoldButton';
+import { CodeInput } from '../components/CodeInput';
 import { DemoData, Fonts } from '../constants/theme';
 import { TopHeaderNav } from '../components/TopHeaderNav';
 
@@ -17,7 +19,58 @@ export default function VerificationScreen() {
   const router = useRouter();
   const { colors } = useTheme();
 
-  const [otp] = useState(['2', '1', '9', '4']);
+  const [code, setCode] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(90);
+  const [canResend, setCanResend] = useState(false);
+
+  useEffect(() => {
+    if (timeLeft <= 0) {
+      setCanResend(true);
+      return;
+    }
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => prev - 1);
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [timeLeft]);
+
+  const formatTimer = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  const handleResend = () => {
+    if (!canResend) return;
+    setTimeLeft(90);
+    setCanResend(false);
+    setError(null);
+    setCode('');
+  };
+
+  const handleVerify = (enteredCode?: string) => {
+    const codeToVerify = enteredCode || code;
+    if (codeToVerify.length !== 4) {
+      setError('Please enter the full 4-digit code.');
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    // Simulate verification delay (accept demo OTP '2194' or any valid 4 digits in mock mode)
+    setTimeout(() => {
+      setLoading(false);
+      // Valid mock codes: 2194 or any 4 digit numeric code
+      if (/^\d{4}$/.test(codeToVerify)) {
+        router.push('/dashboard');
+      } else {
+        setError('Invalid verification code. Please try again.');
+      }
+    }, 450);
+  };
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
@@ -38,27 +91,59 @@ export default function VerificationScreen() {
             Enter the 4-digit code sent to {DemoData.user.countryCode} {DemoData.user.phoneNumber} to elevate your garment care.
           </Text>
 
-          {/* OTP Code Boxes (Pre-filled 2 1 9 4) */}
-          <View style={styles.otpRow}>
-            {otp.map((digit, index) => (
-              <View key={index} style={[styles.otpBox, { backgroundColor: colors.cardBg, borderColor: colors.border }]}>
-                <Text style={[styles.digitText, { color: colors.foreground, fontFamily: Fonts.display }]}>{digit}</Text>
-              </View>
-            ))}
+          {/* Real Controlled CodeInput Component */}
+          <CodeInput
+            length={4}
+            value={code}
+            onChange={(val) => {
+              setCode(val);
+              if (error) setError(null);
+            }}
+            onComplete={(val) => handleVerify(val)}
+            error={!!error}
+            disabled={loading}
+          />
+
+          {error ? (
+            <Text style={styles.errorText}>{error}</Text>
+          ) : (
+            <Text style={[styles.hintText, { color: colors.mutedForeground }]}>
+              Demo code: 2 1 9 4
+            </Text>
+          )}
+
+          {/* Countdown & Resend Button */}
+          <View style={styles.resendRow}>
+            {canResend ? (
+              <Pressable onPress={handleResend} accessibilityRole="button">
+                <Text style={[styles.resendAction, { color: colors.primary }]}>
+                  Resend verification code
+                </Text>
+              </Pressable>
+            ) : (
+              <Text style={[styles.timerText, { color: colors.mutedForeground }]}>
+                Resend code in {formatTimer(timeLeft)}
+              </Text>
+            )}
           </View>
 
-          {/* Timer */}
-          <Text style={[styles.timerText, { color: colors.mutedForeground }]}>
-            Resend code in 01:30
-          </Text>
-
-          {/* Sequential Action -> Home Screen (matching Image 1) */}
-          <GoldButton
-            title="VERIFY & CONTINUE"
-            onPress={() => router.push('/dashboard')}
-            style={styles.verifyBtn}
-            showArrow={true}
-          />
+          {/* Verification CTA */}
+          {loading ? (
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator color={colors.primary} size="large" />
+              <Text style={[styles.loadingText, { color: colors.mutedForeground }]}>
+                Securing verification...
+              </Text>
+            </View>
+          ) : (
+            <GoldButton
+              title="VERIFY & CONTINUE"
+              onPress={() => handleVerify()}
+              style={styles.verifyBtn}
+              showArrow={true}
+              disabled={code.length !== 4}
+            />
+          )}
         </View>
 
         {/* Footer */}
@@ -111,36 +196,43 @@ const styles = StyleSheet.create({
     marginTop: 8,
     paddingHorizontal: 16,
   },
-  otpRow: {
-    flexDirection: 'row',
-    gap: 12,
-    marginTop: 32,
-    width: '100%',
-    justifyContent: 'center',
+  errorText: {
+    color: '#D9534F',
+    fontSize: 13,
+    marginTop: 4,
+    fontWeight: '500',
+    textAlign: 'center',
   },
-  otpBox: {
-    width: 60,
-    height: 64,
-    borderRadius: 18,
-    borderWidth: 1,
+  hintText: {
+    fontSize: 12,
+    marginTop: 4,
+    fontStyle: 'italic',
+  },
+  resendRow: {
+    marginTop: 14,
+    minHeight: 24,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#3a3128',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 6,
-    elevation: 2,
   },
-  digitText: {
-    fontSize: 28,
+  resendAction: {
+    fontSize: 13,
+    fontWeight: '600',
+    textDecorationLine: 'underline',
   },
   timerText: {
     fontSize: 13,
-    marginTop: 18,
   },
   verifyBtn: {
     width: '100%',
-    marginTop: 32,
+    marginTop: 28,
+  },
+  loadingContainer: {
+    marginTop: 28,
+    alignItems: 'center',
+    gap: 8,
+  },
+  loadingText: {
+    fontSize: 13,
   },
   footerSection: {
     alignItems: 'center',

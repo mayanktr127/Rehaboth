@@ -358,6 +358,27 @@ const styles = StyleSheet.create({
     shadowRadius: 6,
     elevation: 1,
   },
+  counterRow: {
+    borderRadius: 20,
+    borderWidth: 1,
+    padding: 16,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    shadowColor: '#3a3128',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.03,
+    shadowRadius: 6,
+    elevation: 1,
+  },
+  counterRowTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  counterRowSub: {
+    fontSize: 12,
+    marginTop: 2,
+  },
   garmentNote: {
     fontSize: 13,
   },

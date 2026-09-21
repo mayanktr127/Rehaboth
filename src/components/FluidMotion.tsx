@@ -4,6 +4,8 @@ import {
   Easing,
   StyleSheet,
   ViewStyle,
+  Pressable,
+  PressableProps,
 } from 'react-native';
 
 interface FluidPageProps {

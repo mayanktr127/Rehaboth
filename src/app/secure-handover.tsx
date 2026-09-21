@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -11,6 +11,7 @@ import {
 import { useRouter } from 'expo-router';
 import { useTheme } from '../components/ThemeContext';
 import { GoldButton } from '../components/GoldButton';
+import { CodeInput } from '../components/CodeInput';
 import { TopHeaderNav } from '../components/TopHeaderNav';
 import { FloatingDockNav } from '../components/FloatingDockNav';
 import { Fonts } from '../constants/theme';
@@ -21,13 +22,28 @@ export default function SecureHandoverScreen() {
   const router = useRouter();
   const { colors } = useTheme();
 
-  const codeDigits = ['4', '9', '2', '1'];
+  const [code, setCode] = useState('4921');
+  const [isConfirmed, setIsConfirmed] = useState(false);
 
   const handleConfirm = () => {
+    if (code.length !== 4) {
+      Alert.alert('Incomplete Code', 'Please enter or confirm the full 4-digit code.');
+      return;
+    }
+    setIsConfirmed(true);
     Alert.alert(
       'Handover Confirmed! 🤝✨',
       'Garment custody successfully verified with Custodian Suresh (#ST-VAL-904).',
-      [{ text: 'Track Order Progress', onPress: () => router.push('/order-status') }]
+      [
+        {
+          text: 'Rate Experience',
+          onPress: () => router.push('/rate-delivery' as any),
+        },
+        {
+          text: 'View Status',
+          onPress: () => router.push('/order-status'),
+        },
+      ]
     );
   };
 
@@ -45,29 +61,31 @@ export default function SecureHandoverScreen() {
           {/* Top Header */}
           <TopHeaderNav showBack={true} />
 
+          {/* Header Section */}
+          <View style={styles.headerSection}>
+            <View style={[styles.alertBadge, { backgroundColor: '#f2e8dc' }]}>
+              <PadlockIcon size={24} />
+            </View>
 
-        {/* Header Section */}
-        <View style={styles.headerSection}>
-          <View style={[styles.alertBadge, { backgroundColor: '#f2e8dc' }]}>
-            <PadlockIcon size={24} />
+            <Text style={[styles.title, { color: colors.foreground, fontFamily: Fonts.display }]}>
+              Identity Verification
+            </Text>
+            <Text style={[styles.subtitle, { color: colors.mutedForeground }]}>
+              Share this secure code with your delivery partner upon arrival to confirm receipt of your sealed garments.
+            </Text>
           </View>
 
-          <Text style={[styles.title, { color: colors.foreground, fontFamily: Fonts.display }]}>
-            Identity Verification
-          </Text>
-          <Text style={[styles.subtitle, { color: colors.mutedForeground }]}>
-            Share this secure code with your delivery partner upon arrival to confirm receipt of your sealed garments.
-          </Text>
-        </View>
-
-        {/* 4 Code Boxes (4 9 2 1) */}
-        <View style={styles.codeBoxesRow}>
-          {codeDigits.map((digit, idx) => (
-            <View key={idx} style={[styles.codeSquare, { backgroundColor: colors.cardBg, borderColor: colors.border }]}>
-              <Text style={[styles.codeDigit, { color: colors.foreground, fontFamily: Fonts.display }]}>{digit}</Text>
-            </View>
-          ))}
-        </View>
+          {/* Real Controlled CodeInput Component */}
+          <CodeInput
+            length={4}
+            value={code}
+            onChange={setCode}
+            onComplete={(c) => {
+              if (c === '4921') {
+                // Auto-ready
+              }
+            }}
+          />
 
         {/* Order Overview Section */}
         <View style={styles.sectionMargin}>
