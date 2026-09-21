@@ -71,6 +71,40 @@ export const ProfilePage: React.FC = () => {
 
         {/* Menu Navigation Items */}
         <section style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '36px' }}>
+          {/* Operator Command Tower & Studio Admin Panel */}
+          <Link
+            to="/admin"
+            className="luxury-card"
+            style={{
+              padding: '16px 20px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              backgroundColor: '#1f1b17',
+              color: '#ffffff',
+              border: '1.5px solid #d68b61',
+              boxShadow: '0 4px 16px rgba(184, 101, 56, 0.15)',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <span style={{ fontSize: '24px' }}>🛡️</span>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span style={{ fontSize: '14.5px', fontWeight: 700, color: '#ffffff', display: 'block' }}>
+                    Operator Command Tower
+                  </span>
+                  <span style={{ fontSize: '10px', fontWeight: 800, padding: '2px 6px', borderRadius: '4px', backgroundColor: '#d68b61', color: '#1f1b17', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                    Admin / Staff
+                  </span>
+                </div>
+                <span style={{ fontSize: '12px', color: '#d68b61', fontWeight: 600 }}>
+                  Hub Intake • Custody Stepper • Tag Printing • Refund Ledger • Termbase
+                </span>
+              </div>
+            </div>
+            <span style={{ fontSize: '13px', fontWeight: 700, color: '#d68b61' }}>Open Tower →</span>
+          </Link>
+
           {/* Active Valet Hub Location Card */}
           <Link
             to="/select-location"

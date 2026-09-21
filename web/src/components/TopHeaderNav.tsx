@@ -27,6 +27,15 @@ export const TopHeaderNav: React.FC<TopHeaderNavProps> = () => {
         return 'Help Center & FAQ';
       case '/profile':
         return 'Member Profile';
+      case '/admin':
+      case '/admin/dashboard':
+      case '/command-tower':
+      case '/operator/dashboard':
+        return 'Operator Command Tower';
+      case '/admin/termbase':
+        return 'Brand Termbase Console';
+      case '/admin/customer-experience':
+        return 'Customer Analytics & Telemetry';
       case '/order-status':
         return 'Live Valet Tracking';
       case '/select-location':
@@ -46,6 +55,7 @@ export const TopHeaderNav: React.FC<TopHeaderNavProps> = () => {
     { title: 'Smart Bag', path: '/smart-bag' },
     { title: 'About Us', path: '/about' },
     { title: 'FAQ', path: '/help' },
+    { title: 'Admin Tower 🛡️', path: '/admin' },
   ];
 
   return (

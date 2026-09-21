@@ -160,10 +160,14 @@ export const WebsiteFooter: React.FC = () => {
           <div>
             © 2026 Rehaboth Steam Atelier. All Rights Reserved. Master garment finishing & smart wardrobe vaulting.
           </div>
-          <div style={{ display: 'flex', gap: '20px' }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px', alignItems: 'center' }}>
             <Link to="/help" style={{ color: '#82786a' }}>Privacy Policy</Link>
             <Link to="/help" style={{ color: '#82786a' }}>Terms of Valet</Link>
             <Link to="/about" style={{ color: '#82786a' }}>Atelier Standards</Link>
+            <span style={{ color: '#4d4336' }}>•</span>
+            <Link to="/admin" style={{ color: '#d68b61', fontWeight: 600 }}>🛡️ Command Tower</Link>
+            <Link to="/admin/termbase" style={{ color: '#d68b61' }}>Termbase</Link>
+            <Link to="/admin/customer-experience" style={{ color: '#d68b61' }}>Telemetry</Link>
           </div>
         </div>
       </div>
