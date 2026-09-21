@@ -69,18 +69,27 @@ export class ApiClient implements IApiService {
         return null as unknown as T;
       }
 
-      return await response.json();
+      return (await response.json()) as T;
     } catch (err: any) {
+      if (err instanceof ApiError) throw err;
       if (err.name === 'AbortError') {
-        throw new ApiError('Request timed out. Please check your network connection.', 408);
-      }
-      if (err instanceof ApiError) {
-        throw err;
+        throw new ApiError(`Request timeout after ${this.timeoutMs}ms`, 408);
       }
       throw new ApiError(err.message || 'Network request failed', 500);
     } finally {
       clearTimeout(timeout);
     }
+  }
+
+  async get<T>(endpoint: string): Promise<T> {
+    return this.request<T>(endpoint, { method: 'GET' });
+  }
+
+  async post<T>(endpoint: string, body?: any): Promise<T> {
+    return this.request<T>(endpoint, {
+      method: 'POST',
+      body: body ? JSON.stringify(body) : undefined,
+    });
   }
 
   async requestOtp(input: OtpRequestInput): Promise<OtpRequestResult> {

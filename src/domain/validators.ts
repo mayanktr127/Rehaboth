@@ -14,8 +14,13 @@ export function validateIndianMobile(raw: string): ValidationResult {
   }
 
   const cleaned = raw.replace(/[^0-9]/g, '');
-  // If user entered with 91 prefix (12 digits), strip it
-  const tenDigit = cleaned.length === 12 && cleaned.startsWith('91') ? cleaned.slice(2) : cleaned;
+  // If user entered with 91 prefix (12 digits) or leading 0 (11 digits), strip it
+  let tenDigit = cleaned;
+  if (tenDigit.length === 12 && tenDigit.startsWith('91')) {
+    tenDigit = tenDigit.slice(2);
+  } else if (tenDigit.length === 11 && tenDigit.startsWith('0')) {
+    tenDigit = tenDigit.slice(1);
+  }
 
   if (tenDigit.length === 0) {
     return { valid: false, error: 'Mobile number cannot be empty.' };

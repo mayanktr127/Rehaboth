@@ -260,7 +260,9 @@ export class MockApiAdapter implements IApiService {
 
   async verifyOtp(input: OtpVerifyInput): Promise<AuthSession> {
     await delay(380);
-    const otpValidation = validateOtp(input.otp, 4);
+    const len = input.otp ? input.otp.length : 0;
+    const is4or6 = len === 4 || len === 6;
+    const otpValidation = is4or6 ? validateOtp(input.otp, len as 4 | 6) : { valid: false, error: 'Verification code must be 4 or 6 digits.' };
     if (!otpValidation.valid) {
       throw new ApiError(otpValidation.error || 'Invalid OTP code', 400);
     }
