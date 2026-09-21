@@ -1,0 +1,195 @@
+.termbase-page {
+  min-height: 100vh;
+  padding: 48px clamp(20px, 5vw, 72px);
+  background: #0d0d0f;
+  color: #f7f4ef;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.termbase-header {
+  max-width: 1180px;
+  margin: 0 auto 28px;
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  align-items: flex-end;
+}
+
+.termbase-kicker, .termbase-key, .locale-label {
+  color: #e8c36a;
+  letter-spacing: .12em;
+  font-size: .72rem;
+  font-weight: 800;
+}
+
+.termbase-header h1 {
+  margin: 6px 0;
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.termbase-header p {
+  color: #9e988f;
+  margin: 0;
+}
+
+.termbase-meta {
+  display: grid;
+  gap: 8px;
+  text-align: right;
+  color: #9e988f;
+  font-size: .75rem;
+}
+
+.termbase-toolbar, .termbase-add, .termbase-card {
+  max-width: 1180px;
+  margin: 0 auto 18px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  background: #141418;
+  padding: 20px;
+}
+
+.termbase-toolbar {
+  display: flex;
+  gap: 12px;
+}
+
+.termbase-toolbar input {
+  flex: 1;
+}
+
+.termbase-add {
+  display: grid;
+  grid-template-columns: 180px 1fr 1fr auto;
+  gap: 12px;
+  align-items: end;
+}
+
+.termbase-add h2 {
+  grid-column: 1 / -1;
+  margin: 0 0 4px 0;
+  font-size: 1rem;
+  color: #ffffff;
+}
+
+.termbase-page input, .termbase-page select {
+  min-height: 42px;
+  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  padding: 0 12px;
+  background: rgba(10, 10, 14, 0.85);
+  color: inherit;
+  font: inherit;
+  outline: none;
+}
+
+.termbase-page input:focus, .termbase-page select:focus {
+  border-color: #d19737;
+}
+
+.termbase-page button {
+  min-height: 42px;
+  border: 0;
+  border-radius: 8px;
+  padding: 0 16px;
+  background: #d19737;
+  color: #17130e;
+  font-weight: 800;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.termbase-page button:hover {
+  opacity: 0.9;
+}
+
+.termbase-page button:disabled {
+  opacity: .55;
+  cursor: wait;
+}
+
+.termbase-card-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.termbase-card-heading p {
+  color: #9e988f;
+  font-size: .78rem;
+  margin: 8px 0 0;
+}
+
+.danger-button {
+  background: transparent !important;
+  color: #f38b8b !important;
+  border: 1px solid rgba(243, 139, 139, 0.35) !important;
+}
+
+.danger-button:hover {
+  background: rgba(243, 139, 139, 0.1) !important;
+}
+
+.termbase-source-form, .termbase-translation {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr auto;
+  gap: 12px;
+  align-items: end;
+  margin-top: 16px;
+}
+
+.termbase-source-form label {
+  display: grid;
+  gap: 6px;
+  color: #9e988f;
+  font-size: .68rem;
+  font-weight: 800;
+  letter-spacing: .08em;
+}
+
+.termbase-translations {
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  margin-top: 18px;
+  padding-top: 8px;
+}
+
+.termbase-translation {
+  grid-template-columns: 60px 1fr 145px auto;
+  margin-top: 10px;
+}
+
+.locale-label {
+  align-self: center;
+}
+
+.termbase-error {
+  color: #f38b8b;
+  font-size: .82rem;
+}
+
+.termbase-empty {
+  max-width: 1180px;
+  margin: 28px auto;
+  color: #9e988f;
+  text-align: center;
+  padding: 40px;
+}
+
+@media (max-width: 760px) {
+  .termbase-header, .termbase-toolbar {
+    display: grid;
+  }
+  .termbase-meta {
+    text-align: left;
+  }
+  .termbase-add, .termbase-source-form, .termbase-translation {
+    grid-template-columns: 1fr;
+  }
+  .termbase-add h2 {
+    grid-column: auto;
+  }
+}
