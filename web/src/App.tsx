@@ -37,8 +37,8 @@ const AnimatedRoutes = () => {
         {/* Administrative & Operator Command Tower routes */}
         <Route path="/admin" element={<OperatorDashboardPage />} />
         <Route path="/admin/dashboard" element={<OperatorDashboardPage />} />
-        <Route path="/admin/termbase" element={<TermbasePage />} />
-        <Route path="/admin/customer-experience" element={<CustomerExperiencePage />} />
+        <Route path="/admin/termbase" element={<OperatorDashboardPage initialTab="termbase" />} />
+        <Route path="/admin/customer-experience" element={<OperatorDashboardPage initialTab="cx" />} />
         <Route path="/operator/dashboard" element={<OperatorDashboardPage />} />
         <Route path="/command-tower" element={<OperatorDashboardPage />} />
       </Routes>
